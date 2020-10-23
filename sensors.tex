@@ -1,26 +1,72 @@
 \chapter{Sensor effects}
-\graphicspath{ {./images/} }
+
+The LSST camera is being constructed at SLAC National Accelerator Laboratory. Its design was motivated by both survey requirements as well as the need to keep with a strict delivery schedule. To this end, a modular design was adopted to enable assembly and testing of individual components in parallel in a test-as-you-build fashion, as well as to allow for the ability to quickly isolate any issues or defects without disturbing the rest of the focal plane.
+
+The camera design is primarily driven by the LSST Camera system and Focal Plane requirements. The fully assembled camera must satisfy these specifications in order to achieve the precision and accuracy needed for scientific analysis. The survey's speed requirements include reaching the 5$\sigma$ limiting magnitudes given in Table \ref{tab:5sigma} in each of the six filter bands. In addition, each patch in the survey footprint will be imaged every three to four nights (in each band?) (LSST system science requirements document, Ivezic). It is therefore essential to minimize the amount of downtime between exposures by enabling a rapid readout of the focal plane. Thus the entire 3.2 gigapixel focal plane will ultimately be read out in two seconds. This is enabled by a CCD pixel architecture consisting of 4k x 4k 10 $\mu m$ square pixels and 16 independent amplifier segments, allowing for a pixel digitization rate of 0.5 MHz.
+
+% Survey depth in each band
+% source:  (IVT of LSST Camera Roodman)
+\begin{table}
+\caption{LSST survey depth requirements.}
+\label{tab:5sigma}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Band & 5$\sigma$ depth per visit & 5$\sigma$ depth over 10 year survey\\
+  \hline \hline
+  u & 23.9 & 26.1 \\
+  \hline
+  g & 25.0 & 27.4 \\
+  \hline
+  r & 24.7 & 27.5 \\
+  \hline
+  i & 24.0 & 26.8 \\
+  \hline
+  z & 23.3 & 26.1 \\
+  \hline
+  y & 22.1 & 24.9 \\
+  \hline
+\end{tabular}
+\end{table}\\
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics{lsstcam-focalplane-lowres.jpg}
-    \caption{LSST full focal plane.}
-    \label{fig:focalplane}
-\end{figure}
+The LSST focal plane consists of 189 CCDs arranged on 21 autonomous cameras called Raft Tower Modules (RTM). An RTM, along with its associated mechanical, thermal and electronic support components, consists of a square matrix of nine CCDs. In addition to the 21 science rafts, there are four additional corner rafts made up of wavefront sensing and guiding arrays used for focusing and telescope guiding.
 
-The LSST camera is currently under construction at SLAC National Accelerator Laboratory. Its focal plane (Fig \ref{fig:focalplane}) consists of a mosaic of 189 CCDs and is designed in a highly modular fashion. This design choice facilitates both the ability to assemble and test the rafts in parallel, as well as to quickly isolate any issues or defects without disturbing the rest of the focal plane. The CCDs are arranged on 21 rafts, where each raft is effectively its own autonomous camera \footnote{Roodman, A. Integration and Verification Testing of the LSST Camera, 2018.} with its own matrix of nine CCDs. 
+Although construction of the LSST camera is taking place at SLAC, initial testing of the CCDs and raft assembly begins at Brookhaven National Laboratory (BNL). Once the rafts are completed, they are shipped to SLAC where the results of a similar suite of tests are compared to those obtained at BNL for consistency.
 
+Verification of camera components was performed on a number of testing benches located in the Camera Clean Room at SLAC. I specifically analyzed data from an optical testing bench called Test Stand 8 (TS8), which was used to perform acceptance tests on individual rafts. A subset of the LSST Camera system requirements are shown in Table \ref{tab:cam-req}. TS8 used a 300 Watt Xe arc lamp, a monochromator, a 6-position filter wheel, an OAP feed optic, a 300 millimeter integrating sphere and a 1 meter baffled dark box (LSST Integration & Test subsystem Bond) to produce dark images, flat fields, $^{55}$Fe X-ray sources, and multi-spot images to study noise, linearity, gain, cross-talk, dead pixels, as well as other unexpected instrument signatures. These electro-optical performance tests were run using a software package developed at SLAC called \pkg{eotest}.  I used the \pkg{eotest} package to study bias corrections and characterize irregularities in the LSST sensors. Because they were produced by two different vendors, Imaging Technology Laboratory (ITL) and Teledyne e2v (e2v), the CCDs have their own unique signatures due to differences in the manufacturing process. A careful study of sensor effects therefore involved evaluating data from TS8 at the raft, CCD, amplifier and vendor level.
 
+ The time I spent at SLAC coincided with the Integration \& Verification Testing phase of the camera construction process, where rafts from BNL were being unpacked from crates and initial verification tests were being performed.
 
+% Focal plane requirements
+% source:  (IVT of LSST Camera Roodman)
+\begin{table}
+\caption{A subset of LSST Focal Plane requirements.}
+\label{tab:cam-req}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Title & Requirement & Test \\
+  \hline \hline
+  QE & $>$ 41\%, 78\%, 83\%, 82\%, 75\%, 21\% (u,g,r,i,z,y) & Cam. Calib. wide-beam \\
+  \hline
+  CCD Diffusion & $\sigma < 5\mu m$ & $^{55}$Fe \\
+  \hline
+  Read Noise & $< 9e^{-}$ & Bias images \\
+  \hline
+  Linearity & $<3\%$ & Flat-fields\\
+  \hline
+\end{tabular}
+\end{table}\\
 
-Upon completion, its 3.2 giga-pixel focal plane will make it the largest digital camera ever built. 
+\section{Bias and offset corrections}
 
-\section{Bias and offset corrections in LSST sensors}
+Every CCD image that is taken contains a bulk offset that must be subtracted out prior to analysis. This offset level, or bias, can be thought of as a ``zero-point'', and typically contains around 20,000 counts. It is usually measured from the serial overscan region of a single channel in a CCD. The overscan region does not refer to a physical location on the sensor. Rather, this region contains ‘virtual’ pixels that are the result of continuing the readout process after data from the last physical pixel in the serial register has been recorded. 
 
-Every CCD image that is taken contains a bulk offset that must be subtracted out prior to analysis. This offset level, or bias, can be thought of as a ``zero-point'', and typically contains around 20,000 counts. It is usually measured from the serial overscan region of a single channel in a CCD. The overscan region does not refer to a physical location on the sensor. Rather, this region contains ‘virtual’ pixels that are the result of continuing readout of the sensor after it has reached the last physical pixel in the serial register.
+% Include image showing CCD architecture and overscan regions
 
-%include image showing CCD architecture and overscan regions
+% How were bias images obtained? What was a typical sequence?
+This offset correction is done using bias images, which are a zero-second exposures taken with the shutter closed. % what type of noise do we expect to see in a bias image?
 
 I first looked at bias images to study the performance of various methods of offset correction at the raft, sensor and amplifier level. I then integrated two new offset-correction methods into the EOTest software package, which is a set of acquisition and analysis scripts used to test the electro-optical performance of the Raft Tower Modules (RTMs). A bias image is a zero-second exposure taken with the shutter closed, so it should contain nothing - no light and no dark current - except for the bulk offset level. At the start of my project, the EOTest package had two ways to calculate the offset level. One was to measure the offset as the mean of all the pixels in the serial overscan region, and the other was to fit a low-order polynomial function to the mean per row in the overscan region. I compared these two methods to three other offset-correction methods: calculating the offset as the mean-per-row in the overscan, as a Gaussian process fit and finally as a cubic spline fit to the mean per row in the overscan region. These comparisons can be seen in Fig. []
 
