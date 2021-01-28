@@ -105,19 +105,56 @@ Lastly, I studied another issue known as bias trending, which was observed by pl
 
 % Show plots
 
-\section{Modeling sky brightness in the ImSim package}
+\section{Modeling sky brightness in ImSim}
 
-\pkg{ImSim} is a software package developed to fill the need for realistic simulations of astronomical sources. It uses ray tracing to translate a catalog of features including positions, spectral densities, magnitudes, cosmological shears and morphologies into Rubin-like science exposures. This is done by taking into account the effects of the atmosphere, telescope and electronics specific to those for Rubin Observatory. 
-% Need source for ImSim
+\subsection{ImSim image simulator}
 
-The initial configuration of the sky model in \pkg{ImSim} was to calculate the sky level at the center of the focal plane, and then use this value for every pixel in the image. I compared using a different sky model where the sky level would vary per chip as opposed to maintaining a constant value over the focal plane and implemented this new sky model into the \pkg{ImSim} package.
+Cosmological surveys depend heavily on realistic simulations. Synthetic images used to test software infrastructure such as data processing and analysis pipelines in preparation for the survey, allowing for the study of systematic effects as well as performance testing. Since there is only one observable universe and cosmological parameters cannot be repeatedly measured under the same conditions, we also need simulated data when on-sky data arrives to test different models of the universe.
 
-To compare the effects of applying a per-chip sky level, I first had to calculate the pixel coordinates of the centers of each chip on the focal plane. I then converted these pixel centers to sky coordinates and finally calculated the sky level at these coordinates assuming a given sky model. The results are shown in Fig. [] for different observing conditions for the r-band. 
+\pkg{ImSim} is a software package developed to fill the need for high-fidelity simulations of Rubin exposures. It is built on top of the GalSim software library to render astrophysical sources as well as the night sky. It also uses telescope and hardware specifics from LSST software libraries describing the telescope PSF and the Rubin focal plane such as CCD geometry and electronics readout. ImSim uses this information, as well as descriptions of source positions, spectral energy distributions, magnitudes, cosmological shears and morphologies to produce raw pixel-level data resembling actual data from the Rubin telescope.
 
+% citation: vera c. rubin observatory lsst desc image simulator (chiang et. al)
 
+Each visit on the sky uses a catalog of sources provided by the CatSim package and observing conditions given by the OpSim database. The observing metadata, such as sky brightness and atmospheric seeing, is used by ImSim to calculate the sky background level. 
 
-% 
+The initial configuration in \pkg{ImSim} was to calculate the sky level at the center of the focal plane and then use this value for every pixel in the image. This was reasonable as a first-pass, however there was a need to investigate whether this approximation was sufficient enough for capturing variations in the sky level across the focal plane. I studied whether there was a significant enough level of sky variation to warrant a more detailed approach by comparing the existing implementation to a model where the sky level would vary per chip as opposed to maintaining a constant value over the focal plane.
 
+To study the effects of varying the sky level per chip I modified the LSST \pkg{skymodel} module, based on the European Southern Observatory sky model (https://github.com/lsst/sims_skybrightness), to give a different sky background for each individual chip. This involved creating a new function that returned the name and pixel coordinates of the centers of each chip. I added a new \pkg{chipName} parameter to the existing sky noise model to convert each pixel coordinate on a chip to its sky coordinates in (ra, dec). Finally, the on-sky chip center positions were passed to the \pkg{skymodel} module to estimate the number of photons incident on the chip for a 30 second exposure (corresponding to two back-to-back 15 second exposures for LSST). Finally, I implemented this new sky model into the \pkg{ImSim} package.
+
+The results are shown in Fig. \ref{fig:skymodel3} for different observing conditions in the r-band. Each point in the plot represents an individual sensor on the LSST focal plane. The color corresponds to the mean sky level per chip in electrons for a 30 second exposure. Since sky noise follows Poisson statistics, the scale for variations across the focal plane is given by the square root of the number of counts at the center. This scale was used to compare the utility of implementing a per chip model versus a model that uses a single sky level for the entire focal plane.
+
+\begin{figure}
+\centering
+\label{fig:skymodel1}
+\includegraphics[width=8cm]{images/sensors/skymodel1.jpg}
+\caption{No noise.}
+\end{figure}
+
+\begin{figure}
+\centering
+\label{fig:skymodel3}
+\begin{subfigure}[b]{.3\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/sensors/skymodel_dark.jpg}
+  \caption{Dark.}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}[b]{.3\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/sensors/skymodel_bright1.jpg}
+  \caption{Bright.}
+  \label{fig:sub2}
+\end{subfigure}
+\begin{subfigure}[b]{.3\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/sensors/skymodel_bright2.jpg}
+  \caption{Bright.}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{moonPhase (0=new, 100=full), dist2Moon (rad), moonAlt (rad).}
+\end{figure}
+
+per-pixel variation sub-dominant
 
 \section{Simulating the brighter-fatter effect}
 
