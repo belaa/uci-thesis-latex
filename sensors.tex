@@ -109,56 +109,105 @@ Lastly, I studied another issue known as bias trending, which was observed by pl
 
 \subsection{ImSim image simulator}
 
-Cosmological surveys depend heavily on realistic simulations. Synthetic images used to test software infrastructure such as data processing and analysis pipelines in preparation for the survey, allowing for the study of systematic effects as well as performance testing. Since there is only one observable universe and cosmological parameters cannot be repeatedly measured under the same conditions, we also need simulated data when on-sky data arrives to test different models of the universe.
+The success of cosmological surveys depends in large part on the generation of realistic simulations. Synthetic images are used to test software infrastructure such as data processing and analysis pipelines in preparation for the survey, allowing for the study of systematic effects as well as performance testing. Since there is only one observable universe and cosmological parameters cannot be repeatedly measured under exactly identical conditions, we also need simulated data to test different models of the universe once on-sky data is available.
 
-\pkg{ImSim} is a software package developed to fill the need for high-fidelity simulations of Rubin exposures. It is built on top of the GalSim software library to render astrophysical sources as well as the night sky. It also uses telescope and hardware specifics from LSST software libraries describing the telescope PSF and the Rubin focal plane such as CCD geometry and electronics readout. ImSim uses this information, as well as descriptions of source positions, spectral energy distributions, magnitudes, cosmological shears and morphologies to produce raw pixel-level data resembling actual data from the Rubin telescope.
+\pkg{ImSim} is a software package developed to fill the need for high-fidelity simulations of Rubin exposures. It is built on top of the GalSim software library to render astrophysical sources as well as the night sky. It also uses telescope and hardware specifications from LSST software libraries describing the telescope PSF and the Rubin focal plane such as CCD geometry and electronics readout. ImSim takes this information as input, as well as descriptions of source positions, spectral energy distributions, magnitudes, cosmological shears and morphologies to produce raw pixel-level data resembling actual data from the Rubin telescope.
 
 % citation: vera c. rubin observatory lsst desc image simulator (chiang et. al)
 
 Each visit on the sky uses a catalog of sources provided by the CatSim package and observing conditions given by the OpSim database. The observing metadata, such as sky brightness and atmospheric seeing, is used by ImSim to calculate the sky background level. 
 
-The initial configuration in \pkg{ImSim} was to calculate the sky level at the center of the focal plane and then use this value for every pixel in the image. This was reasonable as a first-pass, however there was a need to investigate whether this approximation was sufficient enough for capturing variations in the sky level across the focal plane. I studied whether there was a significant enough level of sky variation to warrant a more detailed approach by comparing the existing implementation to a model where the sky level would vary per chip as opposed to maintaining a constant value over the focal plane.
+The initial configuration in \pkg{ImSim} was to calculate the sky level at the center of the focal plane and then use this value for every pixel in the image. This was reasonable as a first-pass, however there was a need to investigate whether this approximation was sufficient enough for capturing variations in the sky level across the focal plane. I studied whether there was a significant enough level of sky variation to warrant a more detailed approach by comparing the existing implementation to a model where the sky level would vary per chip as opposed to maintaining a constant value over every sensor.
 
-To study the effects of varying the sky level per chip I modified the LSST \pkg{skymodel} module, based on the European Southern Observatory sky model (https://github.com/lsst/sims_skybrightness), to give a different sky background for each individual chip. This involved creating a new function that returned the name and pixel coordinates of the centers of each chip. I added a new \pkg{chipName} parameter to the existing sky noise model to convert each pixel coordinate on a chip to its sky coordinates in (ra, dec). Finally, the on-sky chip center positions were passed to the \pkg{skymodel} module to estimate the number of photons incident on the chip for a 30 second exposure (corresponding to two back-to-back 15 second exposures for LSST). Finally, I implemented this new sky model into the \pkg{ImSim} package.
-
-The results are shown in Fig. \ref{fig:skymodel3} for different observing conditions in the r-band. Each point in the plot represents an individual sensor on the LSST focal plane. The color corresponds to the mean sky level per chip in electrons for a 30 second exposure. Since sky noise follows Poisson statistics, the scale for variations across the focal plane is given by the square root of the number of counts at the center. This scale was used to compare the utility of implementing a per chip model versus a model that uses a single sky level for the entire focal plane.
+To study variations in sky counts per chip I modified the LSST \pkg{skymodel} module, based on the model used by the European Southern Observatory ($https://github.com/lsst/sims_skybrightness$), to give a different sky background for each individual chip. This involved creating a new function that returned the name and pixel coordinates of the centers of each chip. I added a new \pkg{chipName} parameter to the existing sky noise model and converted each pixel coordinate on a chip to its sky coordinates in (ra, dec). Finally, the on-sky chip center positions were passed to the \pkg{skymodel} module to estimate the number of photons incident on the chip for a 30 second exposure (corresponding to two back-to-back 15 second exposures for LSST). Finally, I implemented this new sky model into the \pkg{ImSim} package.
 
 \begin{figure}
 \centering
-\label{fig:skymodel1}
 \includegraphics[width=8cm]{images/sensors/skymodel1.jpg}
 \caption{No noise.}
+\label{fig:skymodel1}
 \end{figure}
+
+The results in the r-band are shown in Fig. \ref{fig:skymodel1} for relatively good observing conditions where there is very little contamination from the moon. Each point in the plot represents an individual sensor on the LSST focal plane. The color corresponds to the mean sky level per chip in electrons per exposure. Because sky noise is Poisson distributed, the scale for variations across the focal plane is given by the square root of the number of counts at its center. This scale was used to compare the implementation of a per chip sky model versus a model that uses a single sky level for the entire focal plane. 
 
 \begin{figure}
 \centering
-\label{fig:skymodel3}
-\begin{subfigure}[b]{.3\textwidth}
+\begin{subfigure}[b]{.32\textwidth}
   \centering
   \includegraphics[width=\textwidth]{images/sensors/skymodel_dark.jpg}
   \caption{Dark.}
   \label{fig:sub1}
 \end{subfigure}%
-\begin{subfigure}[b]{.3\textwidth}
+\begin{subfigure}[b]{.32\textwidth}
   \centering
   \includegraphics[width=\textwidth]{images/sensors/skymodel_bright1.jpg}
   \caption{Bright.}
   \label{fig:sub2}
 \end{subfigure}
-\begin{subfigure}[b]{.3\textwidth}
+\begin{subfigure}[b]{.32\textwidth}
   \centering
   \includegraphics[width=\textwidth]{images/sensors/skymodel_bright2.jpg}
   \caption{Bright.}
   \label{fig:sub2}
 \end{subfigure}
 \caption{moonPhase (0=new, 100=full), dist2Moon (rad), moonAlt (rad).}
+\label{fig:skymodel2}
 \end{figure}
 
-per-pixel variation sub-dominant
+In this case, the per chip variation is around 175 sky counts, which is significant compared to the spread around the number of counts at the focal plane center, which is approximately $\sqrt{2600} = 50$. This is based on the uncertainty on the mean number of counts in a single exposure, given by $\sqrt{N}$, where N is the number of counts at the center of the focal plane. Fig. \ref{fig:skymodel2} shows three more examples in both bright and dark conditions. Once again, in all three cases it is clear that the range in sky counts across the focal plane per chip is dominant over the scale for variations based on the number of counts at the center.
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/sensors/perpixel1.jpg}
+  \caption{obsid1}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/sensors/perpixel2.jpg}
+  \caption{obsid7178}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Per-pixel variation is sub-dominant.}
+\label{fig:skymodel3}
+\end{figure}
+
+A natural follow-up was to investigate whether it was necessary to add the sky level per-pixel as opposed to per chip. Fig. \ref{fig:skymodel3} shows the per-pixel sky counts in the r-band for two different observations. It's clear that the per-pixel variation is sub-dominant and that accounting for the sky level based on the center of each pixel is sufficient. 
 
 \section{Simulating the brighter-fatter effect}
 
-- weak lensing shear requirements, distortion signal from BF
+\subsection{The brighter-fatter effect}
+
+The LSST will generate shear and mass maps over a redshift range of $0.3<z<3.0$ (?) using weak gravitational lensing. The lensing sample will include an unprecedented number of galaxies to the point where statistical errors will be reduced and systematic errors will dominate. Thus in the era of precision astronomy, managing the error budget means accounting for systematic effects that were previously sub-dominant. This includes, for example, errors in the estimation of redshift and cosmic shear. 
+
+One of these errors is the PSF shear systematic error. The PSF, or point spread function, is the two-dimensional flux representation of a point source on the focal plane. Contributions to the PSF come from atmospheric turbulence (or seeing) as well as the instrument, which includes telescope optics, deviations from a flat focal plane and sensor anomalies. Together these effects manipulate point sources such that they are rendered as anisotropic blobs on the detector. 
+
+On the level of the sensors, there is a flux-dependence of the PSF due to the electrostatic (Coulomb) repulsion of charges as they near the collecting wells, or pixels. This phenomenon, where accumulated charge in a pixel repels incoming charges into adjacent pixels, is called the brighter-fatter effect. The net result is a mismatching of photo-electrons to pixels, which effectively distorts the dimensions of a pixel from its original square boundaries.
+
+The brighter-fatter effect has the greatest impact on galaxies used for weak lensing, where measurements are dominated by faint galaxies. It may seem contradictory that it would be a greater issue for low-flux galaxies, since its effect is noticeable and increases for brighter and brighter sources. However the reason for this is that for a given galaxy, its observed shape is a convolution of its true shape with the PSF; and while the telescope PSF is the same for each exposure, the atmospheric PSF is not only stochastic, but it is derived from images of bright (Milky Way) stars. The impact of brighter-fatter is therefore negligible for faint galaxies whose peak flux is much lower than the background sky level, but extremely consequential for images of bright stars whose sizes and shapes are measured and used to build a fitting function to extract across the PSF across the focal plane (1703.05823). Failing to mitigate the systematic shape error of these stars would make them poor PSF calibrators for the purposes of weak lensing, ultimately resulting in incorrect PSFs for faint galaxies (1710.03235v1). 
+
+\begin{figure}
+\centering
+\includegraphics[width=8cm]{images/sensors/psf_interp.jpg}
+\caption{Paulin-Henriksson S, Amara A, Voigt L, Refregier A, Bridle SL. 2008. A&A 484:67–77 (via 1710.03235v1).}
+\label{fig:skymodel1}
+\end{figure}
+
+The cosmological shear signal is typically on the order of 1\% (need source), whereas brighter-fatter alters the sizes of bright stars by 1\% or less (1703.05823), easily masking any shape distortions due to lensing. For Stage-IV experiments, the upper limit on PSF shear systematics is 3 x 10-4 (1506.06427)
+
+From (1703.05823): ``To meet precision WL goals of LSST, it is required to reduce the systematic multiplicative shear bias to the range of 10-3-10-4 and to reduce the additive PSF shear bias to 10-4.'' (What's the difference between multiplicative + additive bias? - Rachel's paper says: additive shear bias is error in PSF shape model, multiplicative shear bias is error in size model)
+
+From (1710.03235v1): ``Since the weak lensing shear is so small compared to the intrinsic, randomly-oriented galaxy ellipticities (often called “shape noise”), averaging over very large ensembles of galaxies is the key to achieving small statistical errors. Indeed, this shape noise dominates over the impact of pixel noise in galaxy shape estimation for nearly all galaxies above detection significance of ∼5. Hence weak lensing measurements generally use galaxies that are as faint and small as possible, down to the limit imposed by the need to control systematic uncertainties.''
+
+From (https://arxiv.org/pdf/astro-ph/0003014.pdf): ``Theoretical expectations for this “cosmic shear” on 10-30 arcminute angular scales range from a few percent for standard cold dark matter to less than one percent for an open universe which would expand forever.8–15 The typical background galaxy has an intrinsic ellipticity of roughly 30\%, so that many thousands of source galaxies must be averaged together to detect the small change induced by cosmic shear.''
+
+Circle back at some point to why they are anisotropic (because of the channel stops).
+
+\subsection{Characterizing brighter-fatter with PoissonCCD}
+
+(Explain work being done to characterize and remove it: solve Poisson equation on a 3D lattice (1911.09567))
 
 %%% Local Variables: ***
 %%% mode: latex ***
