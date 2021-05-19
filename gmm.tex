@@ -1,5 +1,290 @@
 \chapter{Magnitude and shape distributions for mock selection of DESI targets}
 
+\section{Target selection}
+
+%https://doi.org/10.3847/1538-3881/ab089d
+%https://ui.adsabs.harvard.edu/abs/2013AJ....145...10D/abstract
+%https://academic.oup.com/mnras/article/455/2/1553/1112409#92067589
+% CLASS = TARGET TYPE?
+% What tense should this be in - past or present?
+% Make comparison to eBOSS?
+% Describe cuts made on the data
+% Include description of each shape profile
+% Include description of density contours for 2D Gaussian
+% Ask David if better to plot 4.2 as-is or with sampled points in green
+% There is noticable difference between my results and John's albeit he used different cuts - could this be due to the cuts, but also because he is running the GMMs on DR 7.1? Did Tractor calculation of fluxes improve in subsequent data releases?
+
+DESI will extract spectra from over 35 million astrophysical sources by collecting light through its 5000 optical fibers. Before that it will need an inventory of targets to choose from so that it can know where to point these fibers. DESI will conduct three separate imaging surveys and combine their maps as part of the DESI Legacy Imaging Surveys. These wide-field surveys will provide photometry that is both uniform and spatially dense, pushing to depths that are around 2 magnitudes deeper than SDSS.  Compared to SDSS, the DESI Legacy Imaging Surveys will detect over 15 times the number of $z>0.5$ galaxies and over 200 times more $z>1.0$ galaxies by reaching $5\sigma$ depth in the z-band (Dey et. al Overview). The utility of these imaging surveys goes beyond target selection for DESI. These wide-field photometry can be used in tandem with overlapping spectroscopic data in a variety of contexts such as redshift estimation through the use of spectroscopic priors or to study dark matter halos by cross-correlating spectroscopic and imaging maps (Dey et. al Overview).
+
+\subsection{DESI Legacy Imaging Surveys}
+
+DESI pre-selected targets by combining images from three ground-based surveys with overlapping photometry from the Wide-field Infrared Survey Explorer (WISE) satellite.  (Might want to include Table 1 and/or Table 2 from Dey et. al)
+The surveys completely overlap with DESI's approximately 14000 deg$^2$ footprint, which is divided into a 9900 deg$^2$ patch and a 4000 deg$^2$ patch in each of the Northern and Southern Galactic Caps, respectively (show figure). The Dark Energy Camera (DECam, Flaugher et al 2015), which is installed on the 4m Blanco telescope at the Cerro Tololo Inter-American Observatory, imaged the entire SGC footprint and part of the NGC in $g,r,z$ bands as part of the Dark Energy Camera Legacy Survey (DECaLS). The majority of DESI's northern footprint was imaged using the Prime90 instrument on the Bok Telescope and the Mosaic-3 camera on the Mayall 4m Telescope at Kitt Peak National Observatory as part of the Beijing-Arizona Sky Survey (BASS, Zou et al 2017b) and Mayall z-band Legacy Survey (MzLS) programs, respectively. BASS provided northern maps in the $g$- and $r$-bands, while MzLS provided supplemental $z$-band photometry over the same footprint. These optical data were combined with mid-infrared photometry from the WISE satellite to help differentiate between targets and characterize morphology, and is particularly useful for selecting luminous red galaxies and quasars. See Table xx for more info about survey coverage and depths.
+
+\begin{table}
+\caption{DESI Legacy Surveys: Areas and Depths}
+\label{tab:5sigma}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Survey Name & Galaxy Depth (mag) & Area (deg$^2$)\\
+  \hline \hline
+  DECaLS & \begin{tabular}{c|c|c}
+  \hline
+  g & r & z\\
+  \hline
+  23.72 & 23.27 & 22.22 \\
+  \hline
+  \end{tabular}
+  & 9000 \\
+  \hline
+  BASS & \begin{tabular}{c|c|c}
+  \hline
+  g & r & z\\
+  \hline
+  23.48 & 22.87 &  \\
+  \hline
+  \end{tabular} & 5000 \\
+  \hline
+  MzLS & \begin{tabular}{c|c|c}
+  \hline
+  g & r & z\\
+  \hline
+   &  &  22.29\\
+  \hline
+  \end{tabular} & 5000 \\
+  \hline
+\end{tabular}
+%Median 5$\sigma$ detection limit in AB mag for the fiducial DESI target 
+%Add WISE info?
+\end{table}\\
+
+\subsection{Target classes}
+%sources from: https://www.desi.lbl.gov/2020/11/04/desi-target-selection/
+
+DESI will observe four different classes of sources, luminous red galaxies (LRG), emission line galaxies (ELG), quasars (QSO) and bright galaxies (BGS), to study cosmic expansion and the growth rate of structure using baryonic acoustic oscillations (BAO) and redshift space distortions (RSD). Fainter, higher-redshift targets such as LRGs, ELGs, and QSOs will be observed during a Dark Time Program, when there is little light contamination from the moon. Low redshift BGS targets will fall under the Bright Time Program, as they will be able to achieve DESI's signal-to-noise requirements despite significant moon illumination.
+
+During its Bright Galaxy Survey, it will obtain spectra of 10 million low redshift galaxies below $z<0.4$ to study BAO and redshift-space distortions (RSD) via galaxy clustering. At slightly higher redshifts, between $0.3<z<1.0$, it will target at least 8 million luminous red galaxies (LRG). These galaxies are characterized by a strong 4000$\mbox{\AA}$ break, a signature of the absorption of high energy radiation by metals in cooler stellar atmospheres that have ceased star formation. Emission line galaxies (ELG) will comprise at least half of all DESI targets. These bluer, star-forming galaxies will probe the $0.6<z<1.6$ universe and will reveal identifiable emission lines such as the OII doublet. 
+%will ELGs and LRGs be used for BAO and RSD as well?
+Finally, DESI will target quasars (QSO) in an even higher redshift regime. QSOs that lie between $0.9<z<2.1$ will be used as direct tracers of dark matter, and beyond $z>2.1$, ``Lyman-alpha" quasars will study large scale structure through the absorption of neutral hydrogen in the intergalactic medium. 
+
+%https://arxiv.org/pdf/1901.01581.
+%https://indico.in2p3.fr/event/18819/contributions/71674/attachments/53296/69308/TS_SV_Desi_ChY.pdf
+\begin{table}
+\caption{DESI target classes.}
+\label{tab:5sigma}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Class & Number & Redshift range\\
+  \hline \hline
+  BGS & 10 million & $0.05<z<0.4$ \\
+  \hline
+  LRG & 4 million & $0.4<z<1.0$ \\
+  \hline
+  ELG & 17.1 million & $0.6<z<1.7$ \\
+  \hline
+  QSO & 1.7 million & $0.9<z<2.1$ \\
+  \hline
+  QSO & 0.7 million & $z>2.1$\\
+  \hline
+\end{tabular}
+\end{table}\\
+
+Objects from these target classes are selected from the imaging surveys based on specific photometric properties. After reduction with the \pkg{legacypipe} pipeline, the \pkg{desitarget} package was used to select targets from the processed images. A set of selection algorithms were applied to the data that used a combination of colors and magnitudes to capture distinguishing features of each class. These selection cuts are shown in Table xx. The resulting target catalogs were compiled in the form of data releases. The studies in this chapter were performed on imaging from Data Release 5 (DR5).
+
+\section{Generating inputs for mocks}
+%https://www.legacysurvey.org/dr9/description/
+Another use for targeting catalogues is to generate realistic synthetic catalogues, or mocks. DESI uses the \pkg{desisim} software to simulate DESI-like spectra for a variety of uses, including identifying and accounting for systematics, testing science pipelines and survey strategy and design. \pkg{desisim} uses a function called \pkg{select$_$mock$_$targets} to randomly assign fluxes and shapes to galaxies. But there was a need to provide representative distributions of those features from which to sample from. I used mixtures of Gaussians to characterize flux and shape distributions for each target class that passed selection cuts using colors and one magnitude (why did I use these?). These models were stored as \pkg{.fits} files in \pkg{desitarget} and sampled from using \pkg{desisim}.
+
+%https://github.com/desihub/desitarget/issues/106
+
+\subsection{Gaussian mixture models}
+
+A mixture model is a form of density estimation that can be used to create generative models of multi-dimensional data. This is done by assuming that the data come from a mixture of components, where each component belongs to the same parametric family of distributions. An expectation-maximization algorithm is used to optimize the parameters for each component as well as assign probabilities for each input data vector belonging to a given component. In the case of a Gaussian mixture model, the components are Gaussian probability distributions, and the parameters in the model consist of the mean and sigma of each. 
+
+\subsection{Model selection}
+
+Gaussian mixture models are useful in characterizing sub-populations within a data set in order to generate new random data that resembles the input data. Properties of the data are learned through training a number of models with a varying number of components in an unsupervised way. The optimal number of components in the model can be determined in a probabilistic way based on a combination of model complexity (the number of degrees of freedom or components in the model) and model performance (a maximum-likelihood estimate of the data given the model). A common model selection process is the Bayesian Information Criterion (BIC), which is expressed analytically as
+
+\begin{equation}
+    BIC = k\,\ln{n} - 2\,\ln\hat{L},
+\end{equation}
+
+where $k$ is the number of model parameters and $n$ is the sample size. $\ln\hat{L}$ is the maximum log-likelihood of the model.  Once the BIC is evaluated for a set of models, the model with the lowest BIC is selected as the most optimal.  
+
+\subsection{Flux and shape distributions in DR 5}
+
+Targets were selected based on a set of unique magnitude and color cuts. The baseline fiducial cuts for each class of object are shown in Table \ref{}. Next, flux and shape distributions were generated using a Gaussian mixture model with the number of components given by the minimum BIC. (Describe training/test/validation process?)
+
+%https://desi.lbl.gov/trac/wiki/TargetSelectionWG 
+\begin{table}
+\caption{LRG selection cuts North}
+\label{tab:lrg_cuts}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Selection & North\\
+  \hline \hline
+  Non-stellar cut & (z - W1) $>$ 0.8 \times \,(r - z) - 0.6 \\
+  \hline
+  Faint limit & zfiber $<$ 21.5 \\
+  \hline
+  Low-z cut & ((g - W1 $>$ 2.67) AND (g - r $>$ 1.45)) OR (r - W1 $>$ 1.85) \\
+  \hline
+  Double sliding cuts & (r - z $>$ (z - 16.79) $\times$ \,0.45) AND (r - z $>$ (z - 13.76) $\times$ \,0.19)
+ \\
+  \hline
+\end{tabular}
+\end{table}\\
+%% zfiber? fiber magnitude vs ???
+
+\begin{table}
+\caption{LRG selection cuts South}
+\label{tab:lrg_cuts}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Selection & South\\
+  \hline \hline
+  Non-stellar cut & (z - W1) $>$ 0.8 \times \,(r - z) - 0.6 \\
+  \hline
+  Faint limit & zfiber $<$ 21.5 \\
+  \hline
+  Low-z cut & ((g - W1 $>$ 2.6) AND (g - r $>$ 1.4)) OR (r - W1 $>$ 1.8) \\
+  \hline
+  Double sliding cuts & (r - z $>$ (z - 16.83) $\times$ \,0.45) AND (r - z $>$ (z - 13.80) $\times$ \,0.19) \\
+  \hline
+\end{tabular}
+\end{table}\\
+
+\begin{table}
+\caption{ELG selection cuts}
+\label{tab:elg_cuts}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Selection & North & South\\
+  \hline \hline
+  Bright cut & g $>$ 20.0 \\
+  \hline
+  Faint cut & g$<$23.5 & g$<$23.4 \\
+  \hline
+  Blue cut & rz$>$0.3 \\
+  \hline
+  Red cut & rz$<$1.6 \\
+  \hline
+  Star/low-z cut & gr$<$1.15\times \,rz-0.20 & gr$<$1.15 \times \,rz-0.15 \\
+  \hline
+  OII & gr$<$-1.20 \times \,rz+1.6 \\
+  \hline
+\end{tabular}
+\end{table}\\
+
+\begin{table}
+\caption{QSO selection cuts}
+\label{tab:qso_cuts}
+\centering
+\begin{tabular}{|c|c|c|}
+  \hline
+  Selection & North & South\\
+  \hline \hline
+   & 17.5 $<$ r $<$ 22.7  \\
+  \hline
+   & grz $>$ 17.0  \\
+  \hline
+   & (g-r) $<$ 1.3 \\
+  \hline
+   & -0.4 $<$ (r-z) $<$ 1.1 \\
+  \hline
+   & W1-W2 $>$ -0.3 & W1-W2 $>$ -0.4\\
+  \hline
+\end{tabular}
+\end{table}\\
+
+\begin{document}
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+\centering
+\includegraphics[width=1\linewidth]{images/gmm/bgs_morph.png}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{.5\textwidth}
+\centering
+\includegraphics[width=1\linewidth]{images/gmm/lrg_morph.png}
+\caption{}
+\end{subfigure}
+\hfill
+\begin{subfigure}{.5\textwidth}
+\centering
+\includegraphics[width=1\linewidth]{images/gmm/elg_morph.png}
+\caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+\centering
+\includegraphics[width=1\linewidth]{images/gmm/qso_morph.png}
+\caption{}
+\end{subfigure}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/lrgDev_bic.png}
+  \caption{LRGs.}
+  \label{fig:lrg_bic}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/lrgDev_training.png}
+  \caption{Training.}
+  \label{fig:lrg_train}
+\end{subfigure}%
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/lrgDev_valid.png}
+  \caption{Valid.}
+  \label{fig:lrg_valid}
+\end{subfigure}
+\caption{Train/sampled/val for LRGs.}
+\label{fig:lrg_gmm}
+\end{figure}
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/qso_bic.png}
+  \caption{QSOs.}
+  \label{fig:qso_bic}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/qso_training.png}
+  \caption{Training.}
+  \label{fig:qso_train}
+\end{subfigure}%
+\begin{subfigure}[b]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{images/gmm/qso_valid.png}
+  \caption{Valid.}
+  \label{fig:lrg_valid}
+\end{subfigure}
+\caption{Train/sampled/val for QSOs.}
+\label{fig:qso_gmm}
+\end{figure}
+
+
+
+\subsection{Extreme Deconvolution}
+
+
 
 
 %%% Local Variables: ***

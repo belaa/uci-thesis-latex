@@ -209,6 +209,15 @@ Circle back at some point to why they are anisotropic (because of the channel st
 
 (Explain work being done to characterize and remove it: solve Poisson equation on a 3D lattice (1911.09567))
 
+(From Craig's PoissonCCD paper (1911.09038))
+
+- CCD simulator, sets parameters via a config file (state what can be controlled here, ie number of electrons, back bias/voltages, z/height, etc)
+- Numerically solves Poisson's equations within a simulation volume consisting of silicon bulk, with boundary conditions are determined by the potentials applied to the bulk surface. The CCD solver then calculates the potentials and electric fields inside the silicon. It then propagates electrons from the top of the CCD (does it matter what wavelength they have/where in the bulk they are generated? or is it all in a single band/wavelength?) Effects of brighter-fatter are discerned by pixel boundary distortions caused by charge belonging to one pixel ending up in adjacent pixels. 
+- The process goes like this: give 1 pixel a fixed amount of charge (this is at the bottom already, not the top?) and give all the rest zero, then calculate all the electric fields/potentials, the propagate electrons through the bulk, then do a binary search to find bifurcation points that determine the pixel boundaries, then plot distortion in pixel boundaries/area due to accumulated central pixel charge
+- The result is that the central pixel loses area while the surrounding pixels gain area (in an asymmetric fashion, with more area in pixels in y-direction - is this because this is parallel to the buried channel stops?)
+
+
+
 %%% Local Variables: ***
 %%% mode: latex ***
 %%% TeX-master: "thesis.tex" ***
