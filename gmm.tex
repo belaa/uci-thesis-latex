@@ -13,11 +13,11 @@
 % Include description of density contours for 2D Gaussian
 % There is noticable difference between my results and John's albeit he used different cuts - could this be due to the cuts, but also because he is running the GMMs on DR 7.1? Did Tractor calculation of fluxes improve in subsequent data releases?
 
-DESI will extract spectra from over 35 million astrophysical sources to measure the expansion rate over the past 11 billion years. To do this it will need an inventory of targets to choose from so that it can know where to point its 5,000 optical fibers. DESI pre-selected targets to observe from three separate imaging surveys, collectively referred to as the DESI Legacy Imaging Surveys. These wide-field surveys will provide photometry that is both uniform and spatially dense, ultimately pushing to depths around 2 magnitudes deeper than SDSS.  Compared to SDSS, the Legacy Surveys will detect over 15 times the number of $z>0.5$ galaxies and over 200 times more $z>1.0$ galaxies by reaching $5\sigma$ depth in the z-band (Dey et. al Overview). The utility of these surveys goes beyond target selection for DESI, as they can be used in tandem with overlapping spectroscopic data in a variety of contexts such as redshift estimation through the use of spectroscopic priors or to study dark matter halos by cross-correlating spectroscopic and imaging maps (Dey et. al Overview).
+DESI will extract spectra from over 35 million astrophysical sources to measure the expansion rate over the past 11 billion years. To do this it will need an inventory of targets to choose from so that it can know where to point its 5,000 optical fibers. DESI pre-selected targets to observe from three separate imaging surveys, collectively referred to as the DESI Legacy Imaging Surveys. These wide-field surveys provided photometry that was both uniform and spatially dense, ultimately pushing to depths around 2 magnitudes deeper than SDSS.  Compared to SDSS, the Legacy Surveys detected over 15 times the number of $z>0.5$ galaxies and over 200 times more $z>1.0$ galaxies by reaching $5\sigma$ depth in the z-band (Dey et. al Overview). The utility of these surveys goes beyond target selection for DESI, as they can be used in tandem with overlapping spectroscopic data in a variety of contexts such as redshift estimation through the use of spectroscopic priors or to study dark matter halos by cross-correlating spectroscopic and imaging maps (Dey et. al Overview).
 
 \subsection{DESI Legacy Imaging Surveys}
 
-The Legacy Surveys completely overlap with DESI's approximately 14000 deg$^2$ footprint, which is divided into separate 9900 deg$^2$ and 4000 deg$^2$ patches in each of the Northern and Southern Galactic Caps, respectively (Fig. \ref{fig:footprint}). The Dark Energy Camera (DECam, Flaugher et al 2015), which is installed on the 4-meter Blanco telescope at the Cerro Tololo Inter-American Observatory, imaged the entire SGC footprint and part of the NGC in $g,r,z$ bands as part of the Dark Energy Camera Legacy Survey (DECaLS). The majority of DESI's northern footprint was imaged at Kitt Peak National Observatory. Photometry in the $g$- and $r$-bands was taken by the Prime90 instrument on the Bok Telescope as part of the Beijing-Arizona Sky Survey (BASS, Zou et al 2017b), and additional $z$-band photometry was provided by the Mayall z-band Legacy Survey (MzLS) which used the Mosaic-3 camera on the Mayall 4-meter Telescope. These optical data were combined with mid-infrared photometry from the Wide-field Infrared Survey Explorer (WISE) satellite (ref) to help differentiate between targets and characterize morphology, and was particularly useful for selecting luminous red galaxies and quasars. See Table \ref{tab:legacy} for more info about survey coverage and depths. (Might want to include Table 1 and/or Table 2 from Dey et. al)
+The Legacy Surveys completely overlap with DESI's approximately 14000 deg$^2$ footprint, which is divided into separate 9900 deg$^2$ and 4000 deg$^2$ patches in each of the Northern and Southern Galactic Caps, respectively (Fig. \ref{fig:footprint}). The Dark Energy Camera (DECam, Flaugher et al 2015), which is installed on the 4-meter Blanco telescope at the Cerro Tololo Inter-American Observatory, imaged the entire SGC footprint and part of the NGC in $g,r,z$ bands as part of the Dark Energy Camera Legacy Survey (DECaLS). The majority of DESI's northern footprint was imaged at Kitt Peak National Observatory. Photometry in the $g$- and $r$-bands was taken by the Prime90 instrument on the Bok Telescope as part of the Beijing-Arizona Sky Survey (BASS, Zou et al 2017b), and additional $z$-band photometry was provided by the Mayall z-band Legacy Survey (MzLS) which used the Mosaic-3 camera on the Mayall 4-meter Telescope. These optical data were combined with mid-infrared photometry from the Wide-field Infrared Survey Explorer (WISE) satellite (ref) to help differentiate between targets and characterize morphology, and were particularly useful for selecting luminous red galaxies and quasars. See Table \ref{tab:legacy} for more info about survey coverage and depths. (Might want to include Table 1 and/or Table 2 from Dey et. al)
 
 \begin{figure}\centering
 \subfloat[g-band]{\label{a}\includegraphics[width=.45\linewidth]{images/gmm/depth-g-dr9.png}}\hfill
@@ -35,30 +35,27 @@ The Legacy Surveys completely overlap with DESI's approximately 14000 deg$^2$ fo
 \centering
 \begin{tabular}{c c c c c}
 \toprule
-\multicolumn{4}{c}{xxx xx xxxx}   \\
-\midrule
-  \hline
-  \hline
+\multicolumn{4}{c}{}   \\
   Survey Name & Telescope/Instrument & Galaxy Depth (mag) & Area (deg$^2$) & Location\\
   \hline \hline
-  DECaLS & \begin{tabular}{c|c|c}
+  DECaLS & Blanco/DECam & \begin{tabular}{c|c|c}
   g & r & z\\
   \hline
   23.72 & 23.27 & 22.22 \\
   \end{tabular}
-  & 9000 \\
+  & 9000 & NGC(\delta \leq+32^{\circ})+SGC\\
   \hline
-  BASS & \begin{tabular}{c|c}
+  BASS & Bok/90Prime & \begin{tabular}{c|c}
   g & r \\
   \hline
   23.48 & 22.87 &  \\
-  \end{tabular} & 5000 \\
+  \end{tabular} & 5000 & NGC(\delta \geq+32^{\circ})\\
   \hline
-  MzLS & \begin{tabular}{c}
+  MzLS & Mayall/Mosaic-3 & \begin{tabular}{c}
   z\\
   \hline
    &  &  22.29\\
-  \end{tabular} & 5000 \\
+  \end{tabular} & 5000 & NGC(\delta \leq+32^{\circ})\\
   \hline
 \end{tabular}
 %Median 5$\sigma$ detection limit in AB mag for the fiducial DESI target 
@@ -68,7 +65,7 @@ The Legacy Surveys completely overlap with DESI's approximately 14000 deg$^2$ fo
 \subsection{Target classes}
 %sources from: https://www.desi.lbl.gov/2020/11/04/desi-target-selection/
 
-DESI will observe luminous red galaxies (LRG), emission line galaxies (ELG), quasars (QSO) and bright galaxies (BGS), to study cosmic expansion and the growth rate of structure using baryonic acoustic oscillations (BAO) and redshift space distortions (RSD). Fainter, higher-redshift targets such as LRGs, ELGs, and QSOs will be observed during a Dark Time Program, when there is little light contamination from the moon. Low redshift BGS targets will fall under the Bright Time Program, as they will be able to achieve DESI's signal-to-noise requirements despite significant moon illumination.
+DESI will observe luminous red galaxies (LRG), emission line galaxies (ELG), quasars (QSO) and bright galaxies (BGS) to study cosmic expansion and the growth rate of structure through the imprints of baryonic acoustic oscillations (BAO) and redshift space distortions (RSD). Fainter, higher-redshift targets such as LRGs, ELGs, and QSOs will be observed during a Dark Time Program, when there is little light contamination from the moon. Low redshift BGS targets will fall under the Bright Time Program, as they will be able to achieve DESI's signal-to-noise requirements despite significant moon illumination.
 
 During its Bright Galaxy Survey, DESI will obtain spectra of 10 million low redshift galaxies below $z<0.4$ to study BAO and RSD via galaxy clustering. At slightly higher redshifts, between $0.3<z<1.0$, it will target at least 8 million LRGs. These galaxies are characterized by a strong $4000\mbox{\AA}$ break, a signature of the absorption of high energy radiation by metals in cooler stellar atmospheres that have ceased star formation. ELGs will comprise at least half of all DESI targets. These bluer, star-forming galaxies will probe the $0.6<z<1.6$ universe and will reveal identifiable emission lines such as the OII doublet. 
 %will ELGs and LRGs be used for BAO and RSD as well?
@@ -97,7 +94,7 @@ Finally, DESI will target QSOs in an even higher redshift regime. QSOs that lie 
 \end{tabular}
 \end{table}\\
 
-Objects from these target classes are selected from the imaging surveys based on their specific photometric properties. After reduction with the \pkg{legacypipe} pipeline, the \pkg{desitarget} package was used to select targets from the processed images. Targets were selected based on a set of unique magnitude and color cuts that captured distinguishing features of each class. The baseline fiducial cuts for each class of object are shown in Tables \ref{tab:lrg_cuts}-\ref{tab:qso_cuts}. The resulting target catalogs were compiled in the form of data releases. The studies in this chapter were performed on imaging from Data Release 5 (DR5).
+Objects from these target classes are selected from the imaging surveys based on their specific photometric properties. After reduction with the \pkg{legacypipe} pipeline (cite), the \pkg{desitarget} (cite) package was used to select targets from the processed images. Targets were chosen based on a set of unique magnitude and color cuts that captured distinguishing features of each class. The baseline fiducial cuts for each class of object are shown in Tables \ref{tab:lrg_cuts}-\ref{tab:qso_cuts}. The resulting target catalogs were compiled in the form of data releases. The studies in this chapter were performed on imaging from Data Release 5 (DR5).
 
 
 %https://desi.lbl.gov/trac/wiki/TargetSelectionWG 
@@ -187,7 +184,7 @@ Objects from these target classes are selected from the imaging surveys based on
 
 \section{Generating inputs for mocks}
 %https://www.legacysurvey.org/dr9/description/
-Aside from target selection, another use for these imaging catalogues is to generate realistic synthetic spectra, or mocks. DESI used the \pkg{desisim} software to simulate DESI-like spectra for a variety of purposes, including identifying and accounting for systematics, testing science pipelines, and survey strategy and design. \pkg{desisim} uses a function called \pkg{select\_mock\_targets} to randomly assign fluxes and shapes to galaxies based on representative distributions of those features. I generated flux and shape distributions for \pkg{select\_mock\_targets} using mixtures of Gaussians to characterize each target class that passed selection cuts. These models were stored as \pkg{.fits} files in \pkg{desitarget} and sampled from using \pkg{desisim}.
+Aside from target selection, another use for these imaging catalogues is to generate realistic synthetic spectra, or mocks. DESI used the \pkg{desisim} (cite) software to simulate DESI-like spectra for a variety of purposes, including identifying and accounting for systematics, testing science pipelines, as well as survey strategy and design. \pkg{desisim} uses a function called \pkg{select\_mock\_targets} to randomly assign fluxes and colors to galaxies based on representative distributions of those features. I generated flux and color distributions for \pkg{select\_mock\_targets} using mixtures of Gaussians to characterize galaxies from each target class that passed selection cuts. These models were stored as \pkg{.fits} files in \pkg{desitarget} and sampled from using \pkg{desisim}.
 
 %https://github.com/desihub/desitarget/issues/106
 
@@ -195,21 +192,21 @@ Aside from target selection, another use for these imaging catalogues is to gene
 
 % should I go into the math behind GMMs here?
 
-A mixture model is a form of density estimation that can be used to create generative models of multi-dimensional data. This is done by assuming that the data come from a mixture of components, or Gaussians, whose parameters are optimized using an expectation-maximization (EM) algorithm. The model is then used to assign probabilities to an input vector belonging to a given component. 
+A mixture model is a form of density estimation that can be used to create generative models of multi-dimensional data. This is done by assuming that the data come from a mixture of components, or Gaussians, whose parameters are optimized using an expectation-maximization (EM) algorithm. The model is then used to assign probabilities to new data based on whether they belong to a given component. 
 
 \subsection{Model selection}
 
-Gaussian mixture models are useful in characterizing sub-populations within a data set in order to generate new random data that resembles the input data. Properties of the data set are learned through training a number of models with a varying number of components in an unsupervised way. The optimal number of components in the model is determined based on a combination of model complexity (the number of degrees of freedom or components in the model) and model performance (a maximum-likelihood estimate of the data given the model). A common model selection process is the Bayesian Information Criterion (BIC), which is expressed analytically as
+Gaussian mixture models are useful in characterizing sub-populations within a data set in order to generate new random data that resembles the input data. Properties of the data set are learned through training a number of models with a varying number of components in an unsupervised way. The optimal number of components in the model is determined based on a combination of model complexity (the number of degrees of freedom or components in the model) and model performance (a maximum-likelihood estimate of the data given the model). The model parameters for a GMM are the means and covariances of the Gaussian components, which are also included in the model optimization process. A common model selection method is the Bayesian Information Criterion (BIC), which is expressed analytically as
 
 \begin{equation}
     BIC = k\,\ln{n} - 2\,\ln\hat{L},
 \end{equation}
 
-where $k$ is the number of model parameters, $n$ is the sample size, and $\ln\hat{L}$ is the maximum log-likelihood of the model. The model parameters for a GMM are the means and covariances of the Gaussian components. Once the BIC is evaluated for a set of models, the model with the lowest BIC is selected as the most optimal. Flux and shape distributions were generated using a Gaussian mixture model with the optimal number of components given by the minimum BIC. 
+where $k$ is the number of model parameters, $n$ is the sample size, and $\ln\hat{L}$ is the maximum log-likelihood of the model. Once the BIC is evaluated for a set of models, the model with the lowest BIC is selected as the most optimal. Flux and color distributions were generated using a Gaussian mixture model with the optimal number of components given by the minimum BIC. 
 
-\subsection{Flux and shape distributions in DR 5}
+\subsection{Flux and color distributions in DR 5}
 
- Rather than model sizes, shapes, colors and magnitudes simultaneously, colors and magnitudes were modeled separately for each morphological type (why did we decide to do it this way? lower-dimensional Gaussians/fewer components?). Morphological classifications were assigned according to each target's surface brightness profile, as inferred by the Tractor fitting algorithm (cite). The morphological types used in DR5 are point sources (PSF), round exponential galaxies with a variable radius (REX), deVaucouleurs profiles (DEV), exponential profiles (EXP), and composite profiles (COMP), which are a combination of deVaucouleurs and exponential profiles. Table \ref{tab:morph} shows the distribution of types in DR5 in the absence of selection cuts, and the plots in Fig. \ref{fig:morphfrac} show the fraction of targets belonging to each morphological classification in ten bins equally spaced in magnitude.
+ Rather than model sizes, shapes, colors and magnitudes simultaneously, colors and magnitudes were modeled separately for each morphological type (why did we decide to do it this way? I think it had to do with shape components being correlated with fluxes...). Morphological classifications were assigned according to each target's surface brightness profile, as inferred by the Tractor fitting algorithm (cite). The morphological types used in DR5 are point sources (PSF), round exponential galaxies with a variable radius (REX), deVaucouleurs profiles (DEV), exponential profiles (EXP), and composite profiles (COMP), which are a combination of deVaucouleurs and exponential profiles. Table \ref{tab:morph} shows the distribution of types in DR5 in the absence of selection cuts, and the plots in Fig. \ref{fig:morphfrac} show the fraction of targets belonging to each morphological classification in ten bins equally spaced in magnitude.
 
 \begin{table}
 \caption{Morphological types in DR5.}
@@ -260,17 +257,11 @@ where $k$ is the number of model parameters, $n$ is the sample size, and $\ln\ha
 \caption{Morphological type fraction.}
 \end{figure}
 
-The features used to build the GMMs were based on the magnitudes and colors used in the selection cuts for each class. GMMs were first trained on the photometry, and then the model parameters and weights were used to generate synthetic distributions of the data with the same features. The data were split into a training set used to train the model, and a validation set used to assess the performance of the model on data that were not used for training. 
+The features used to build the GMMs were based on the magnitudes and colors used for selection cuts for each class. GMMs were first trained on the photometry, and then the model parameters and weights were used to generate synthetic distributions of the data with the same features. The data were split into a training set used to train the model, and a validation set used to assess the performance of the model on data that were not used for training. 
 
+Plots of the optimal number of Gaussian components determined by the BIC, as well as the 2-dimensional histograms for training and validation sets are shown in Figs. \ref{} for LRGs with deVaucoulours profiles and QSOs. The sampled data from the trained model are overlaid in green. This process was extended in a similar fashion for the remaining combinations of classes and morphologies. The contours in the histograms show the 1-, 2-, and 3-$\sigma$ contours containing 39.3\%, 86.5\%, 98.9\% of the data, respectively. 
 
-The results in Fig. \ref{} are the 2-dimensional histograms for a subset of the 
-
-this process was extended in a similar fashion for the remaining combinations of classes and morphologies. 
-
-
-(Describe training/test/validation process?)
-
-
+%(Describe training/test/validation process?)
 
 \begin{figure}
   \centering
@@ -328,7 +319,7 @@ this process was extended in a similar fashion for the remaining combinations of
 
 \subsection{Extreme Deconvolution}
 
-
+** should I add? **
 
 
 %%% Local Variables: ***
