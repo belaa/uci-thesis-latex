@@ -164,12 +164,12 @@ where $\sigma_{ro,i}$ is the readout noise in pixels. The read noise is assumed 
 
 \section{Simulating the eBOSS instrument response}
 
-talk about wavelength grid under instrument (used for interpolation) - the grid used for simulation needs to be within the range of the input source grid (and all instrument data files for throughput, resolution, etc).  
-
-\section{eBOSS mocks for Lyman-alpha studies}
-
+% Intro
 Lyman-alpha working group needed realistic simulations of eBOSS spectra. London mocks vs saclay mocks
 
+% Talk about eBOSS data
+% See Smee paper for details?
+% Mention downsampling in eBOSS and making output eBOSS wlen grid linear in log-lambda to match eBOSS format
 
 \begin{table}
 \caption{Telescope parameters: DESI vs eBOSS.}
@@ -198,11 +198,11 @@ Lyman-alpha working group needed realistic simulations of eBOSS spectra. London 
   \hline
   Camera parameters & b & r & z\\
   \hline \hline
-  Read noise (e^{-}/pixel$^{2}$) & 3.0 & 2.9 & 2.9 \\
+  Read noise (e$^{-}/pixel$^{2}$) & 3.0 & 2.9 & 2.9 \\
   \hline
-  Dark current (e^{-}/hour/pixel^{2}) & 3.0 & 2.0 & 2.0 \\
+  Dark current (e$^{-}/hour/pixel^{2}) & 3.0 & 2.0 & 2.0 \\
   \hline
-  Gain (e^{-}/ADU) & 1.0 & 1.0 & 1.0\\
+  Gain (e$^{-}$/ADU) & 1.0 & 1.0 & 1.0\\
   \hline
 \end{tabular}
 \end{table}\\
@@ -227,6 +227,208 @@ Lyman-alpha working group needed realistic simulations of eBOSS spectra. London 
 % Fiberloss
 The source type determines the fiberloss method, which calculates the fraction of light incident on a fiber that makes it through. uses a pre-computed table of fiberloss fractions based on the source type, or whether it uses information about the transverse profile of the source on the sky to calculate fiberloss fractions via the \pkg{galsim}, a software package that simulates high-fidelity images of galaxies (cite).
 
+% Should I also plot the simulation grid?
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/wlen_soln.png}
+\caption{Wavelength solutions for all 500 fibers on each camera over 20 plates.}
+\label{fig:wavelength_solutions}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=14cm]{images/specsim/canonical_grid.png}
+\caption{Canonical wavelength grids.}
+\label{fig:canonical}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{images/specsim/eboss_row_width.png}
+   \caption{eBOSS dispersion.}
+   \label{fig:eboss_disp} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{images/specsim/desi_row_width.png}
+   \caption{DESI dispersion.}
+   \label{fig:desi_disp}
+\end{subfigure}
+\caption[Two numerical solutions]{(a) Describe top figure. (b) Describe bottom figure.}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{images/specsim/eboss_resolution.png}
+   \caption{eBOSS FWHM resolution.}
+   \label{fig:eboss_fwhm} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{images/specsim/desi_resolution.png}
+   \caption{DESI FWHM resolution.}
+   \label{fig:desi_fwhm}
+\end{subfigure}
+\caption[Two numerical solutions]{(a) Describe top figure. (b) Describe bottom figure.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{}
+   \caption{eBOSS spatial resolution.}
+   \label{fig:eboss_neff} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.55\textwidth}
+   \includegraphics[width=14cm]{images/specsim/desi_neff.png}
+   \caption{DESI spatial resolution.}
+   \label{fig:desi_neff}
+\end{subfigure}
+\caption[Two numerical solutions]{(a) Describe top figure. (b) Describe bottom figure.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm]{images/specsim/extinction.png}
+\caption{Extinction comparison.}
+\label{fig:extinction}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm]{images/specsim/sky_brightness.png}
+\caption{Sky brightness comparison.}
+\label{fig:sky_brightness}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm]{images/specsim/source.png}
+\caption{QSO source comparison.}
+\label{fig:qso_source}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=14cm]{images/specsim/fiberloss_chart_red.png}
+\caption{Chart showing fiberloss x extinction. SPECTROPHOTO\_STD plate 7027, mjd 56448, fiber 97, band `red'.}
+\label{fig:fiberloss_chart}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/all_standards_7027_56448_blue.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/all_standards_7027_56448_red.png}
+    \caption{All standards on a plate, blue (left) and red (right).}
+    \label{fig:all_stds}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/all_stds_median_7027_56448_blue.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/all_stds_median_7027_56448_red.png}
+    \caption{Median of all standards on a plate, blue (left) and red (right).}
+    \label{fig:all_stds_median}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=20cm]{images/specsim/downsampled_7027_56448_blue.png}
+\caption{Median vs mean downsampled of all SPECTROPHOTO\_STD on plate 7027, mjd 56448, band `blue'.}
+\label{fig:downsampled_blue}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=20cm]{images/specsim/downsampled_7027_56448_red.png}
+\caption{Median vs mean downsampled of all SPECTROPHOTO\_STD on plate 7027, mjd 56448, band `red'.}
+\label{fig:downsampled_red}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=14cm]{images/specsim/desimodel-qso-fiberloss.png}
+\caption{Simulated fiberloss (galsim + desimodel).}
+\label{fig:desimodel_qso_floss}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/throughput_blue.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/throughput_red.png}
+    \caption{Throughput, blue (left) and red (right).}
+    \label{fig:throughput}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/desimodel-fiberloss.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/fiberloss_qso.png}
+    \caption{Quasar fiberloss, adjusted from DESI.}
+    \label{fig:qso_fiberloss}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm]{images/specsim/eboss_config.png}
+\caption{eBOSS instrument configuration.}
+\label{fig:eboss_config}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=12cm]{images/specsim/desi_config.png}
+\caption{DESI instrument configuration.}
+\label{fig:desi_config}
+\end{figure}
+
+% Verify
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/stellar_model_4055_55359_1.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/sky_flux_4055_55359_1.png}
+    \caption{Stellar model + sky data}
+    \label{fig:star_sky}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=17cm]{images/specsim/simulated_output_4055_55359_1.png}
+\caption{Simulated output.}
+\label{fig:simulated_flux}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/ivar_4055_55359_1.png}
+\caption{Simulated ivar.}
+\label{fig:simulated_ivar}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_334.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_395.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_41.png}
+     \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_694.png}
+      \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_890.png}
+       \includegraphics[width=0.495\textwidth]{images/specsim/ivar_4055_55359_970.png}
+    \caption{ivar comparisons.}
+    \label{fig:ivar}
+\end{figure}
+
+talk about wavelength grid under instrument (used for interpolation) - the grid used for simulation needs to be within the range of the input source grid (and all instrument data files for throughput, resolution, etc).  
 
 
 \section{Verifying the (ESO) sky model}
