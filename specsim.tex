@@ -164,14 +164,38 @@ where $\sigma_{ro,i}$ is the readout noise in pixels. The read noise is assumed 
 
 \section{Simulating the eBOSS instrument response}
 
+% synthetic, mocks, simulations
+
 % Intro
-Lyman-alpha working group needed realistic simulations of eBOSS spectra. London mocks vs saclay mocks
+The \pkg{specsim} package was developed with the flexibility to simulate the response of any multi-fiber spectrograph, given that the accompanying configuration data is provided. There were several motivations for reconfiguring \pkg{specsim} to simulate the eBOSS instrument and cameras. An eBOSS configuration would serve a critical purpose by allowing for the validation of \pkg{specsim} itself, since eBOSS data already exists. From a software engineering perspective, it would confirm the extent to which the package was in fact generalizeable. Although the package should in theory be able to extend to other instruments, this had never actually been done. \pkg{specsim} had only been set up to create synthetic DESI spectra, and it was unclear how difficult it would be to fashion it so that it would accommodate three spectrographic arms for eBOSS instead of two for DESI, or to use different wavelength binnings, among other things. Another use, and the primary motivation for this undertaking, was to generate realistic simulations of eBOSS spectra for the eBOSS Lyman-alpha working group.
+
+\subsection{Generation of mocks for Lyman-alpha studies}
+
+% Brief background on Lyman-alpha working group studies
+There was a need for realistic mocks, and that included accurate modeling of instrumental effects, particularly instrumental noise (mention studies of inverse variance)
+
+
+
+
+This work was ultimately used in Chabanier et al
+
+% We present the characteristics of the Damped Lyman-α (DLA) systems found in the data release DR16 of the extended Baryon Oscillation Spectroscopic Survey (eBOSS) of the Sloan Digital Sky Sur- vey (SDSS). DLAs were identified using the convolutional neural network (CNN) of Parks et al. (2018). A total of 117,458 absorbers candidates were found with 2 ≤ zDLA ≤ 5.5 and 19.7 ≤ log N (HI ) ≤ 22, including 57,136 DLA candidates with log N (HI ) ≥ 20.3. Mock quasar spectra were used to estimate DLA detection efficiency and the purity of the resulting catalog. Restricting the quasar sample to bright forests, i.e. those with mean forest fluxes fλ > 2 × 10−19 W m−2 nm−1, the completeness and purity are greater than 90% for DLAs with column densities in the range 20.1 ≤ log N (HI ) ≤ 22.
+
+studies of Lyman-alpha absorption in the spectra of high-redshift quasars
+
+% Helion: Apart from the statistical gain from new quasars and deeper observations, the main improvements over previous work come from more accurate modeling of physical and instrumental correlations and the use of new sets of mock data.Two new sets of three-dimensional (3D) Gaussian random field simulations have been developed to char- acterize our combined measurement of the auto- and cross-correlation (see Section 5). These mocks allow us to test the steps of the data analysis, thus study potential sources of systematic errors and test the estimation of statistical errors. Unlike our previous mock spectra, the Lyβ spectral region is also simulated and studied.
+
+% Farr (https://arxiv.org/pdf/1912.02763.pdf): Generating mock datasets for such measurements will be important for validating analy- sis pipelines and evaluating the effects of systematics. With such studies in mind, we present LyaCoLoRe: a package for producing synthetic Lyman-α forest survey datasets for BAO anal- yses. LyaCoLoRe transforms initial Gaussian random field skewers into skewers of transmitted flux fraction via a number of fast approximations. 
+% The upcoming Dark Energy Spectroscopic Instrument (DESI) [27] will be able to ad- vance these measurements greatly. Over the 5 years of its operation, it will measure approx- imately 800,000 QSO spectra with z > 2.0, 3 times as many as in the final eBOSS dataset (approximately 270,000). Ahead of such an increase in statistical power, it is vital to be able to sufficiently test analysis pipelines to ensure that they do not introduce any biases. Equally, it is important to be able to quantify exactly how secondary astrophysical effects will impact upon BAO measurements. The best way to carry out both of these tests is through the development of mock datasets [e.g. 28–30] — synthetic realisations of a survey for which cosmological and astrophysical parameters can be easily controlled. 
+% Having generated a physical density field, tracers such as QSOs can be placed at its peaks via Poisson sampling according to an input bias and number density, and line-of-sight skewers can be drawn by interpolating within the box. Converting density skewers to mimic the transmitted flux fraction of the Lyα forest then requires a significant degree of post-processing.
+% In this work, we use CoLoRe [37] to generate our initial Gaussian skewers, as described in § 2.1. We then present the package LyaCoLoRe, which is able to convert CoLoRe’s output into realistic skewers of transmitted flux fraction. The output skewers from LyaCoLoRe then require the addition of instrumental noise and combination with a QSO continuum before they can be considered realistic spectra. This can be carried out in the context of DESI by a package called desisim1, which is not discussed in this work.
+% The primary motivation for creating the LyaCoLoRe mocks is to provide realistic sets of test skewers for BAO analyses from Lyα forest surveys. Evidently then, it is important to verify that the fundamental physical quantities studied by such analyses are correctly reproduced in the mock datasets. We thus seek to test that the BAO signal is present and unbiased in our mock datasets. 
 
 % Talk about eBOSS data
 % See Smee paper for details?
 % Mention downsampling in eBOSS and making output eBOSS wlen grid linear in log-lambda to match eBOSS format
 
-\begin{table}
+\begin{table}[h]
 \caption{Telescope parameters: DESI vs eBOSS.}
 \label{tab:comparison}
 \centering
@@ -190,7 +214,7 @@ Lyman-alpha working group needed realistic simulations of eBOSS spectra. London 
 \end{tabular}
 \end{table}\\
 
-\begin{table}
+\begin{table}[h]
 \caption{DESI camera parameters.}
 \label{tab:desicam}
 \centering
@@ -207,7 +231,7 @@ Lyman-alpha working group needed realistic simulations of eBOSS spectra. London 
 \end{tabular}
 \end{table}\\
 
-\begin{table}
+\begin{table}[h]
 \caption{eBOSS camera parameters.}
 \label{tab:ebosscam}
 \centering
@@ -281,7 +305,7 @@ The source type determines the fiberloss method, which calculates the fraction o
 \begin{figure}[h]
 \centering
 \begin{subfigure}[b]{0.55\textwidth}
-   \includegraphics[width=14cm]{}
+   \includegraphics[width=14cm]{images/specsim/eboss_neff.png}
    \caption{eBOSS spatial resolution.}
    \label{fig:eboss_neff} 
 \end{subfigure}
@@ -428,10 +452,73 @@ The source type determines the fiberloss method, which calculates the fraction o
     \label{fig:ivar}
 \end{figure}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/model_comparison.png}
+\caption{Compare desi and eboss model qso spectrum.}
+\label{fig:model_comparison}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/sim_comparison.png}
+\caption{Compare desi and eboss simulated qso spectrum.}
+\label{fig:sim_comparison}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/ivar_comparison.png}
+\caption{Compare desi and eboss inverse variance.}
+\label{fig:ivar_comparison}
+\end{figure}
+
+talk about log10 angstrom output
+
 talk about wavelength grid under instrument (used for interpolation) - the grid used for simulation needs to be within the range of the input source grid (and all instrument data files for throughput, resolution, etc).  
 
 
-\section{Verifying the (ESO) sky model}
+\section{Verifying the \pkg{specsim} sky model}
+
+% specsim model based on eso? compare specsim sky brightness against empirical data from DECam
+% mention all contributions to sky brightness: scattered moonlight, zodiacal light, extinction (photons scattered / absorbed
+% due to molecules in the atmosphere, transparency / cloud cover
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.495\textwidth]{images/specsim/lunar_plot_zen_21.21_az_307.76_ph_0.13.png}
+    \includegraphics[width=0.495\textwidth]{images/specsim/lunar_plot_zen_97.31_az_100.50_ph_0.10.png}
+    \caption{Lunar plots.}
+    \label{fig:lunar}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/moon_separation_binned.png}
+\caption{Moon separation.}
+\label{fig:moon_sep}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/atmosphere_am_1.38_moon_zenith_63.28_sep_angle_53.24_moon_phase_0.45.png}
+\caption{Contribution of different atmospheric components.}
+\label{fig:atm_components}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=18cm]{images/specsim/moon_brightness.png}
+\caption{Predicted vs empirical sky brightness.}
+\label{fig:sb_comparison}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/sky_brightness_residuals.png}
+\caption{Sky brightness residuals predicted - model.}
+\label{fig:sb_res}
+\end{figure}
 
 
 %%% Local Variables: ***
