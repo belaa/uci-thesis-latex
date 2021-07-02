@@ -4,11 +4,11 @@ Introduction: used to generate simulations for eBOSS Lyman-alpha and to verify D
 
 \section{Spectroscopic simulations with \pkg{specsim}}
 
-\pkg{specsim} (cite) is a software package developed by Dr. David Kirkby to simulate the response of a multi-fiber spectrograph. Although it was originally created to generate realistic synthetic spectra for the DESI instrument, it can be reconfigured to simulate any fiber-fed spectrograph, provided that the accompanying instrument parameter specifications and data are provided.\\
+\pkg{specsim} (cite) is a software package developed by Dr. David Kirkby to simulate the response of a multi-fiber spectrograph. Although it was originally created to generate realistic synthetic spectra for the DESI instrument, it can be reconfigured to simulate any fiber-fed spectrograph, provided that the accompanying instrument parameter specifications and data are provided.
 
-A single simulation consists of three components: a source spectrum, a model of the sky and atmosphere, and a model of the instrument. A schema of where each component comes into play is shown in Fig. \ref{fig:schema}, which shows the journey of photons as they are emitted from a galaxy to the moment they are read out by the detector.\\
+A single simulation consists of three components: a source spectrum, a model of the sky and atmosphere, and a model of the instrument. A schema of where each component comes into play is shown in Fig. \ref{fig:schema}, which shows the journey of photons as they are emitted from a galaxy to the moment they are read out by the detector.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=11cm]{images/specsim/overview.png}
 \caption{Specsim schema.}
@@ -17,9 +17,9 @@ A single simulation consists of three components: a source spectrum, a model of 
 
 \subsection{Astrophysical source}
 % Needs work/editing
-Spectra of astrophysical sources are simulated individually, beginning with a spectral energy distribution (SED) in its rest frame, $s(\lambda)$, and its morphological profile. Configuration parameters for a source profile include the bulge/disk fraction and shape parameters such as the half-light radius, position angle, and the ratio of the semi-minor to semi-major axis. The source profile is assumed to be independent of its SED, and will come into play later on when accounting for fiberloss when modeling the effects of the instrument.\\ 
+Spectra of astrophysical sources are simulated individually, beginning with a spectral energy distribution (SED) in its rest frame, $s(\lambda)$, and its morphological profile. Configuration parameters for a source profile include the bulge/disk fraction and shape parameters such as the half-light radius, position angle, and the ratio of the semi-minor to semi-major axis. The source profile is assumed to be independent of its SED, and will come into play later on when accounting for fiberloss when modeling the effects of the instrument.
 
-\begin{table}
+\begin{table}[h]
 \caption{Specsim simulation parameters.}
 \label{tab:specsim_vars}
 \centering
@@ -60,19 +60,19 @@ Spectra of astrophysical sources are simulated individually, beginning with a sp
   $\sigma_{ro,i}$ & Camera & Readout noise \\
   \hline
 \end{tabular}
-\end{table}\\
+\end{table}
 
 \subsection{Sky model}
-Given a source, the next component of the \pkg{specsim} pipeline is the sky model, which incorporates the effects of the atmosphere. The three elements that make up the sky model are a sky emission spectrum, the atmospheric point spread function, or PSF, and atmospheric extinction.\\
+Given a source, the next component of the \pkg{specsim} pipeline is the sky model, which incorporates the effects of the atmosphere. The three elements that make up the sky model are a sky emission spectrum, the atmospheric point spread function, or PSF, and atmospheric extinction.
 
 % Include side-by-side plots of DESI vs eBOSS dark sky here
 % Talk about downsampling?
 
 % Sky emission
-The sky model used for both DESI and eBOSS configurations is virtually identical. The sky emission surface brightness $b(\lambda)$ for the DESI configuration contains data for three different types of sky spectra corresponding to dark, bright and grey conditions, whereas the eBOSS sky emmission spectrum is just the DESI dark sky extrapolated to cover the wider wavelength range of the eBOSS spectrograph.\\
+The sky model used for both DESI and eBOSS configurations is virtually identical. The sky emission surface brightness $b(\lambda)$ for the DESI configuration contains data for three different types of sky spectra corresponding to dark, bright and grey conditions, whereas the eBOSS sky emmission spectrum is just the DESI dark sky extrapolated to cover the wider wavelength range of the eBOSS spectrograph.
 
 % Seeing
-Atmospheric PSF results in the blurring of an image of a source as its photons encounter varying indices of refraction when traveling through different layers of the Earth's atmosphere. Differences in temperature, pressure, density and molecular composition in each layer, as well as turbulence in the air, cause photons to slightly deflect from their original paths, resulting in a ``smeared" image. Seeing is defined as the full width at half maximum (FWHM) of a radial profile of a point source, typically a star, from its peak value.\\
+Atmospheric PSF results in the blurring of an image of a source as its photons encounter varying indices of refraction when traveling through different layers of the Earth's atmosphere. Differences in temperature, pressure, density and molecular composition in each layer, as well as turbulence in the air, cause photons to slightly deflect from their original paths, resulting in a ``smeared" image. Seeing is defined as the full width at half maximum (FWHM) of a radial profile of a point source, typically a star, from its peak value.
 
 The effects of atmospheric seeing in \pkg{specsim} can be applied in one of three ways. The fastest mode assumes a fixed 1.1" seeing for each source type (LRG, ELG, QSO, etc.), and doesn't account for any additional information about surface brightness profiles. A slower, but more flexible mode uses \pkg{GalSim}, a package that simulates images of astrophysical sources (cite), to convolve the source profile with the atmospheric PSF. \pkg{GalSim} requires additional information in the configuration file such as FWHM$_{ref}$ and $\lambda_{ref}$, which are used to estimate the PSF as a function of wavelength in the following way:
 
@@ -82,7 +82,7 @@ The effects of atmospheric seeing in \pkg{specsim} can be applied in one of thre
 
 Since \pkg{GalSim} uses a Moffat profile to model the PSF, a fixed value for the $\beta$ parameter, which determines the shape of the PSF, must also be specified. The Moffat distribution is predominantly used for modeling PSFs as it is more successful at capturing tails compared to a Gaussian or Lorentzian distribution.
 
-The final component in the sky model is atmospheric extinction, which could be caused by Rayleigh scattering of air molecules or particulate matter such as aerosols, or by telluric absorption due to the Earth's atmosphere. This is provided in the configuration file as a list of tabulated values for the extinction coefficient $e(\lambda)$ at zenith as a function of wavelength. The amount of extinction at other airmasses is determined by multiplying the the extinction coefficient by the airmass at that particular pointing.\\
+The final component in the sky model is atmospheric extinction, which could be caused by Rayleigh scattering of air molecules or particulate matter such as aerosols, or by telluric absorption due to the Earth's atmosphere. This is provided in the configuration file as a list of tabulated values for the extinction coefficient $e(\lambda)$ at zenith as a function of wavelength. The amount of extinction at other airmasses is determined by multiplying the the extinction coefficient by the airmass at that particular pointing.
 
 Together, the three components of the sky model can be combined to model the attenuation of the source and emission spectra in terms of the extinction factor $-e(\lambda)$ and the airmass $X$ due to the effects of the atmosphere: 
 
@@ -90,7 +90,7 @@ Together, the three components of the sky model can be combined to model the att
     10^{-e(\lambda)X/2.5}.
 \end{equation}
 
-\pkg{specsim} allows the option to include a scattered moonlight component as part of the sky brightness spectrum, which is determined for each observation by a solar SED (given by http://rredc.nrel.gov/solar/spectra/am0/), the moon phase, the moon zenith and the separation angle between the telescope pointing and the moon.\\
+\pkg{specsim} allows the option to include a scattered moonlight component as part of the sky brightness spectrum, which is determined for each observation by a solar SED (given by http://rredc.nrel.gov/solar/spectra/am0/), the moon phase, the moon zenith and the separation angle between the telescope pointing and the moon.
 
 \subsection{Telescope and instrument}
 
@@ -104,13 +104,13 @@ Photons that are incident on the telescope are impacted by the total collecting 
 \label{eq:flux}
 \end{equation}
 
-where $\Delta t$ is the length of a single exposure. The last step after combining the impacts of the atmosphere and telescope is to simulate the effects of the camera.\\ 
+where $\Delta t$ is the length of a single exposure. The last step after combining the impacts of the atmosphere and telescope is to simulate the effects of the camera.
 
 \subsubsection{Instrument}
 \label{sec:instrument}
-\pkg{specsim} is able to simulate the response of a spectrograph and one or more cameras. This involves characterizing the effects of the instrument once photons have exited the fiber, as shown in the green portion of Fig. \ref{fig:schema}, beginning with the dispersion $d_{i}(\lambda)$, indexed by camera $i$, as incoming light is separated into its constituent wavelengths by the spectrograph. This is also referred to as the row width, and gives the conversion from wavelength in Angstroms to size in pixels.\\
+\pkg{specsim} is able to simulate the response of a spectrograph and one or more cameras. This involves characterizing the effects of the instrument once photons have exited the fiber, as shown in the green portion of Fig. \ref{fig:schema}, beginning with the dispersion $d_{i}(\lambda)$, indexed by camera $i$, as incoming light is separated into its constituent wavelengths by the spectrograph. This is also referred to as the row width, and gives the conversion from wavelength in Angstroms to size in pixels.
 
-Once the light has been converted into a spectrum, it reaches one or more detectors, or charge-coupled devices (CCDs) (see Chapter 2), where it is registered as a function of fiber number along the vertical direction, and wavelength or pixel number along the horizontal axis. If one were to plot a distribution of where photons from a single source landed on the detector, as a function of wavelength, the CCD resolution $\sigma_{i}(\lambda)$ would correspond to the Gaussian sigma of the best-fit Gaussian to that distribution. Values for the trace width, which gives the thickness of the spectrum on the fiber axis, corresponding to the read noise in the spatial direction, must also be provided in the configuration file. Additional values for the amount of dark current, read noise, gain and throughput for each camera must also be specified. Further details regarding each of these parameters will be given in the following section.\\
+Once the light has been converted into a spectrum, it reaches one or more detectors, or charge-coupled devices (CCDs) (see Chapter 2), where it is registered as a function of fiber number along the vertical direction, and wavelength or pixel number along the horizontal axis. If one were to plot a distribution of where photons from a single source landed on the detector, as a function of wavelength, the CCD resolution $\sigma_{i}(\lambda)$ would correspond to the Gaussian sigma of the best-fit Gaussian to that distribution. Values for the trace width, which gives the thickness of the spectrum on the fiber axis, corresponding to the read noise in the spatial direction, must also be provided in the configuration file. Additional values for the amount of dark current, read noise, gain and throughput for each camera must also be specified. Further details regarding each of these parameters will be given in the following section.
 
 The calculations used to determine the camera response are performed on a simulation grid $\lambda_{j}$ (indexed by bin $j$) whose resolution is greater than the wavelength extent of a single camera pixel by at least a factor of five. If a photon with wavelength $\lambda_{j} < \lambda < \lambda_{j+1}$ enters a fiber and lands in a bin of width $\Delta \lambda_{j}$, where
 
@@ -144,7 +144,7 @@ Each camera's throughput $T_{i}(\lambda)$ is defined as the probability that a p
 
 %what is N^{eh} in specsim docs?
 
-Next, the dispersion function $d_i(\bar{\lambda}_{k})$ is determined as a function of Angstroms in the detection grid in order to re-bin the number of detected counts from the detection wavelength grid to continuous pixel coordinates $N_{ip}^{e}$.\\
+Next, the dispersion function $d_i(\bar{\lambda}_{k})$ is determined as a function of Angstroms in the detection grid in order to re-bin the number of detected counts from the detection wavelength grid to continuous pixel coordinates $N_{ip}^{e}$.
 
 Folding in sensor effects such as the camera gain $G_{i}$ and dark current $I_{dk,i}$ gives the signal in terms of the number of detected electrons:
 
@@ -158,7 +158,7 @@ where $n_{ip}$ is the trace width in pixels for wavelength pixel $p$. The varian
     V_{ip}^{det} = N_{ip}^{det} + \sigma_{ro,i}^{2}n_{ip}\,,
 \end{equation}
 
-where $\sigma_{ro,i}$ is the readout noise in pixels. The read noise is assumed to be uncorrelated between pixels.\\
+where $\sigma_{ro,i}$ is the readout noise in pixels. The read noise is assumed to be uncorrelated between pixels.
 
 %"The source flux is integrated over the fiber, but the sky spectrum is a "surface brightness" so has an extra "/sq.arcsec." in its units, so needs to be multiplied by the fiber area. Think of a really big fiber: the rate of source photons would be independent of the fiber size, since they are 100% collected (FFRAC=1), but the rate of sky photons scales with the fiber area."
 
@@ -167,21 +167,19 @@ where $\sigma_{ro,i}$ is the readout noise in pixels. The read noise is assumed 
 % synthetic, mocks, simulations
 
 % Intro
-The \pkg{specsim} package was developed with the flexibility to simulate the response of any multi-fiber spectrograph, given that the accompanying configuration data is provided. There were several motivations for reconfiguring \pkg{specsim} to simulate the eBOSS instrument and cameras. An eBOSS configuration would serve a critical purpose by allowing for the validation of \pkg{specsim} itself, since eBOSS data already exists. From a software engineering perspective, it would confirm the extent to which the package was in fact generalizeable. Although the package should in theory be able to extend to other instruments, this had never actually been done. \pkg{specsim} had only been set up to create synthetic DESI spectra, and it was unclear how difficult it would be to fashion it so that it would accommodate three spectrographic arms for eBOSS instead of two for DESI, or to use different wavelength binnings, among other things. Another use, and the primary motivation for this undertaking, was to generate realistic simulations of eBOSS spectra for the eBOSS Lyman-alpha working group.
+The \pkg{specsim} package was developed with the flexibility to simulate the response of any multi-fiber spectrograph, given that the accompanying configuration data is provided. There were several motivations for reconfiguring \pkg{specsim} to simulate the eBOSS instrument and cameras. Firstly, an eBOSS configuration would serve a critical purpose by allowing for the validation of \pkg{specsim} itself, since eBOSS data already exists. From a software engineering perspective, it would confirm the extent to which the package is in fact generalizeable. Although the package should in theory be able to extend to other instruments, this had never actually been done. \pkg{specsim} had only been set up to produce synthetic DESI spectra, and it was unclear how difficult it would be to accommodate three spectrographic arms for eBOSS instead of two for DESI, or to use different wavelength binnings, among other things. Another use, and the primary motivation for this undertaking, was to generate realistic simulations of eBOSS spectra for the eBOSS Lyman-$\alpha$ working group.
 
 \subsection{Generation of mocks for Lyman-alpha studies}
 
 % Brief background on Lyman-alpha working group studies
-There was a need for realistic mocks, and that included accurate modeling of instrumental effects, particularly instrumental noise (mention studies of inverse variance)
 
+Baryon acoustic oscillations (BAO, see Intro section xx) originating from the pre-recombination universe are a cosmological ``standard ruler" whose imprints are seen as peaks in the matter correlation function at the sound horizon. Measurements of the BAO scale can be measured from the clustering of galaxies for redshifts below $z<2$, but there are simply not enough tracers at redshifts above this limit for high-precision clustering measurements. The alternative is to use opacity fluctuations due to the absorption of neutral hydrogen in the Lyman-$\alpha$ forest of background quasars. The final eBOSS data release, Data Release 16, includes all quasars observed by both BOSS and eBOSS, including 210,005 quasars above $z>1.10$ \cite{dMdB20}.
 
+The eBOSS Lyman-$\alpha$ working group rely on faithful representations of quasar spectra to validate analysis pipelines and study potential sources of systematic effects \cite{Farr20}. Mock quasar spectra specifically generated with the eBOSS configuration of \pkg{specsim} were used to estimate the detection efficiency of Damped Lyman-$\alpha$ systems using a convolutional neural network, ultimately revealing the purity of the quasar sample used for BAO studies \cite{Chabanier21}. 
 
-
-This work was ultimately used in Chabanier et al
+The production of mocks begins with the generation of a Gaussian random field on a box of length $10 h^{-1} Gpc$. The peaks of this physical density field are then populated with tracer quasars via Poisson sampling, based on an input bias and number density. Next, skewers for each quasar are generated by interpolating the density field along the line-of-sight, and then processed to convert from fluctuations in the density field to a transmitted flux fraction for each Lyman-$\alpha$ spectrum. These processed skewers are the source inputs to \pkg{specsim}, as shown in the red portion of Fig. \ref{fig:schema}.
 
 % We present the characteristics of the Damped Lyman-α (DLA) systems found in the data release DR16 of the extended Baryon Oscillation Spectroscopic Survey (eBOSS) of the Sloan Digital Sky Sur- vey (SDSS). DLAs were identified using the convolutional neural network (CNN) of Parks et al. (2018). A total of 117,458 absorbers candidates were found with 2 ≤ zDLA ≤ 5.5 and 19.7 ≤ log N (HI ) ≤ 22, including 57,136 DLA candidates with log N (HI ) ≥ 20.3. Mock quasar spectra were used to estimate DLA detection efficiency and the purity of the resulting catalog. Restricting the quasar sample to bright forests, i.e. those with mean forest fluxes fλ > 2 × 10−19 W m−2 nm−1, the completeness and purity are greater than 90% for DLAs with column densities in the range 20.1 ≤ log N (HI ) ≤ 22.
-
-studies of Lyman-alpha absorption in the spectra of high-redshift quasars
 
 % Helion: Apart from the statistical gain from new quasars and deeper observations, the main improvements over previous work come from more accurate modeling of physical and instrumental correlations and the use of new sets of mock data.Two new sets of three-dimensional (3D) Gaussian random field simulations have been developed to char- acterize our combined measurement of the auto- and cross-correlation (see Section 5). These mocks allow us to test the steps of the data analysis, thus study potential sources of systematic errors and test the estimation of statistical errors. Unlike our previous mock spectra, the Lyβ spectral region is also simulated and studied.
 
@@ -190,10 +188,13 @@ studies of Lyman-alpha absorption in the spectra of high-redshift quasars
 % Having generated a physical density field, tracers such as QSOs can be placed at its peaks via Poisson sampling according to an input bias and number density, and line-of-sight skewers can be drawn by interpolating within the box. Converting density skewers to mimic the transmitted flux fraction of the Lyα forest then requires a significant degree of post-processing.
 % In this work, we use CoLoRe [37] to generate our initial Gaussian skewers, as described in § 2.1. We then present the package LyaCoLoRe, which is able to convert CoLoRe’s output into realistic skewers of transmitted flux fraction. The output skewers from LyaCoLoRe then require the addition of instrumental noise and combination with a QSO continuum before they can be considered realistic spectra. This can be carried out in the context of DESI by a package called desisim1, which is not discussed in this work.
 % The primary motivation for creating the LyaCoLoRe mocks is to provide realistic sets of test skewers for BAO analyses from Lyα forest surveys. Evidently then, it is important to verify that the fundamental physical quantities studied by such analyses are correctly reproduced in the mock datasets. We thus seek to test that the BAO signal is present and unbiased in our mock datasets. 
-
 % Talk about eBOSS data
 % See Smee paper for details?
 % Mention downsampling in eBOSS and making output eBOSS wlen grid linear in log-lambda to match eBOSS format
+
+\subsection{Telescope parameters}
+
+
 
 \begin{table}[h]
 \caption{Telescope parameters: DESI vs eBOSS.}
