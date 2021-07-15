@@ -11,13 +11,13 @@ A single simulation consists of three components: a source spectrum, a model of 
 \begin{figure}[h]
 \centering
 \includegraphics[width=11cm]{images/specsim/overview.png}
-\caption{Specsim schema.}
+\caption{Specsim schema \cite{Kirkby_21}}
 \label{fig:schema}
 \end{figure}
 
 \subsection{Astrophysical source}
 % Needs work/editing
-Spectra of astrophysical sources are simulated individually, beginning with a spectral energy distribution (SED) in its rest frame, $s(\lambda)$, and its morphological profile. Configuration parameters for a source profile include the bulge/disk fraction and shape parameters such as the half-light radius, position angle, and the ratio of the semi-minor to semi-major axis. The source profile is assumed to be independent of its SED, and will come into play later on when accounting for fiberloss when modeling the effects of the instrument.
+Spectra of astrophysical sources are simulated individually, beginning with a spectral energy distribution (SED) in its rest frame, $s(\lambda)$, and its morphological profile. Configuration parameters for a source profile include the bulge/disk fraction and shape parameters such as the half-light radius, position angle, and the ratio of the semi-minor to semi-major axis. The source profile is assumed to be independent of its SED, and will come into play later on in Section \ref{sec:fiberloss} to account for fiberloss when modeling the effects of the instrument.
 
 \begin{table}[h]
 \caption{Specsim simulation parameters.}
@@ -72,25 +72,25 @@ Given a source, the next component of the \pkg{specsim} pipeline is the sky mode
 The sky model used for both DESI and eBOSS configurations is virtually identical. The sky emission surface brightness $b(\lambda)$ for the DESI configuration contains data for three different types of sky spectra corresponding to dark, bright and grey conditions, whereas the eBOSS sky emmission spectrum is just the DESI dark sky extrapolated to cover the wider wavelength range of the eBOSS spectrograph.
 
 % Seeing
-Atmospheric PSF results in the blurring of an image of a source as its photons encounter varying indices of refraction when traveling through different layers of the Earth's atmosphere. Differences in temperature, pressure, density and molecular composition in each layer, as well as turbulence in the air, cause photons to slightly deflect from their original paths, resulting in a ``smeared" image. Seeing is defined as the full width at half maximum (FWHM) of a radial profile of a point source, typically a star, from its peak value.
+The atmospheric PSF results in the blurring of an image of a source as its photons encounter varying indices of refraction when traveling through different layers of the Earth's atmosphere. Differences in temperature, pressure, density and molecular composition in each layer, as well as turbulence in the air, cause photons to slightly deflect from their original paths, resulting in a ``smeared" image. Seeing is defined as the full width at half maximum (FWHM) of a radial profile of a point source, typically a star, from its peak value.
 
-The effects of atmospheric seeing in \pkg{specsim} can be applied in one of three ways. The fastest mode assumes a fixed 1.1" seeing for each source type (LRG, ELG, QSO, etc.), and doesn't account for any additional information about surface brightness profiles. A slower, but more flexible mode uses \pkg{GalSim}, a package that simulates images of astrophysical sources (cite), to convolve the source profile with the atmospheric PSF. \pkg{GalSim} requires additional information in the configuration file such as FWHM$_{ref}$ and $\lambda_{ref}$, which are used to estimate the PSF as a function of wavelength in the following way:
+The effects of atmospheric seeing in \pkg{specsim} can be applied in one of three ways. The fastest mode assumes a fixed 1.1" seeing for each source type (LRG, ELG, QSO, etc.), and does not account for any additional information about surface brightness profiles. A slower, but more flexible mode uses \pkg{GalSim}, a package that simulates images of astrophysical sources \cite{Rowe_2015}, to convolve the source profile with the atmospheric PSF. \pkg{GalSim} requires additional information in the configuration file such as FWHM$_{ref}$ and $\lambda_{ref}$, which are used to estimate the PSF as a function of wavelength in the following way:
 
 \begin{equation}
     \mbox{FWHM}(\lambda) = \mbox{FWHM}_{ref} \Big(\frac{\lambda}{\lambda_{ref}}\Big)^{-0.2}.
 \end{equation}
 
-Since \pkg{GalSim} uses a Moffat profile to model the PSF, a fixed value for the $\beta$ parameter, which determines the shape of the PSF, must also be specified. The Moffat distribution is predominantly used for modeling PSFs as it is more successful at capturing tails compared to a Gaussian or Lorentzian distribution.
+The reference values used in the configuration file are FWHM$_{ref} = 1.1$ arcsec and $\lambda_{ref} = 6355 \mbox{\AA}$. Since \pkg{GalSim} uses a Moffat profile to model the PSF, a fixed value for the $\beta$ parameter (with a typical value of 3.5), which determines the shape of the PSF, must also be specified. The Moffat distribution is predominantly used for modeling PSFs as it is more successful at capturing tails compared to a Gaussian or Lorentzian distribution.
 
-The final component in the sky model is atmospheric extinction, which could be caused by Rayleigh scattering of air molecules or particulate matter such as aerosols, or by telluric absorption due to the Earth's atmosphere. This is provided in the configuration file as a list of tabulated values for the extinction coefficient $e(\lambda)$ at zenith as a function of wavelength. The amount of extinction at other airmasses is determined by multiplying the the extinction coefficient by the airmass at that particular pointing.
+The final component in the sky model is atmospheric extinction, which could be caused by Rayleigh scattering of air molecules or particulate matter such as aerosols, or by telluric absorption due to the Earth's atmosphere. This is provided in the configuration file as a list of tabulated values for the extinction coefficient $e(\lambda)$ at zenith as a function of wavelength. The amount of extinction at other airmasses is determined by multiplying the extinction coefficient by the airmass at that particular pointing.
 
-Together, the three components of the sky model can be combined to model the attenuation of the source and emission spectra in terms of the extinction factor $-e(\lambda)$ and the airmass $X$ due to the effects of the atmosphere: 
+Together, the three components of the sky model are combined to model the attenuation of the source spectrum and the sky brightness in terms of the extinction factor $e(\lambda)$ and the airmass $X$ due to the effects of the atmosphere. The spectral flux density $f(\lambda)$ at the entrance of the telescope then becomes:
 
 \begin{equation}
-    10^{-e(\lambda)X/2.5}.
+    f(\lambda) = 10^{-e(\lambda)X/2.5}[s(\lambda) + ab(\lambda)].
 \end{equation}
 
-\pkg{specsim} allows the option to include a scattered moonlight component as part of the sky brightness spectrum, which is determined for each observation by a solar SED (given by http://rredc.nrel.gov/solar/spectra/am0/), the moon phase, the moon zenith and the separation angle between the telescope pointing and the moon.
+\pkg{specsim} allows the option to include a scattered moonlight component as part of the sky brightness spectrum, which is determined for each observation by a solar SED (given by http://rredc.nrel.gov/solar/spectra/am0/), the moon phase, the moon zenith angle and the separation angle between the telescope pointing and the moon.
 
 \subsection{Telescope and instrument}
 
@@ -110,18 +110,18 @@ where $\Delta t$ is the length of a single exposure. The last step after combini
 \label{sec:instrument}
 \pkg{specsim} is able to simulate the response of a spectrograph and one or more cameras. This involves characterizing the effects of the instrument once photons have exited the fiber, as shown in the green portion of Fig. \ref{fig:schema}, beginning with the dispersion $d_{i}(\lambda)$, indexed by camera $i$, as incoming light is separated into its constituent wavelengths by the spectrograph. This is also referred to as the row width, and gives the conversion from wavelength in Angstroms to size in pixels.
 
-Once the light has been converted into a spectrum, it reaches one or more detectors, or charge-coupled devices (CCDs) (see Chapter 2), where it is registered as a function of fiber number along the vertical direction, and wavelength or pixel number along the horizontal axis. If one were to plot a distribution of where photons from a single source landed on the detector, as a function of wavelength, the CCD resolution $\sigma_{i}(\lambda)$ would correspond to the Gaussian sigma of the best-fit Gaussian to that distribution. Values for the trace width, which gives the thickness of the spectrum on the fiber axis, corresponding to the read noise in the spatial direction, must also be provided in the configuration file. Additional values for the amount of dark current, read noise, gain and throughput for each camera must also be specified. Further details regarding each of these parameters will be given in the following section.
+Once the light has been dispersed to produce a spectrum, it reaches one or more detectors, or charge-coupled devices (CCDs) (see Chapter 2), where it is registered as a function of fiber number along the vertical direction, and wavelength or pixel number along the horizontal axis. If one were to plot a distribution of where photons from a single source landed on the detector, as a function of wavelength, the CCD resolution $\sigma_{i}(\lambda)$ would correspond to the Gaussian sigma of the best-fit Gaussian to that distribution. Values for the trace width, which gives the thickness of the spectrum along the fiber axis, corresponding to the read noise in the spatial direction, must also be provided in the configuration file. Additional values for the amount of dark current, read noise, gain and throughput for each camera must also be specified. Further details regarding each of these parameters will be given in the following section.
 
-The calculations used to determine the camera response are performed on a simulation grid $\lambda_{j}$ (indexed by bin $j$) whose resolution is greater than the wavelength extent of a single camera pixel by at least a factor of five. If a photon with wavelength $\lambda_{j} < \lambda < \lambda_{j+1}$ enters a fiber and lands in a bin of width $\Delta \lambda_{j}$, where
+The calculations used to determine the camera response are performed on a simulation grid $\lambda_{j}$ (indexed by bin $j$) whose resolution is smaller than the wavelength extent of a single camera pixel by at least a factor of five. If a photon with wavelength $\lambda_{j} < \lambda < \lambda_{j+1}$ enters a fiber and lands in a bin of width $\Delta \lambda_{j}$, where
 
 \begin{equation}
-    \Delta \lambda_{j} \equiv \lambda_{j+1} - \lamda{j}\,,
+    \Delta \lambda_{j} \equiv \lambda_{j+1} - \lambda_{j}\,,
 \end{equation}
 
 then the energy $E_{j}$ associated with this photon in ergs can be derived from the Planck equation:
 
 \begin{equation}
-    E_{j} = \frac{hc}{\Delta \lambda{j}}\,,
+    E_{j} = \frac{hc}{\Delta \lambda_{j}}\,,
 \end{equation}
 
 where $h$ is Planck's constant and $c$ is the speed of light. This can be used to convert from the flux density in Eq. \ref{eq:flux} at the center of each bin to the number of photons entering the fiber $N_{j}^{\gamma}$:
@@ -133,10 +133,10 @@ where $h$ is Planck's constant and $c$ is the speed of light. This can be used t
 The bin centers are given by:
 
 \begin{equation}
-    \bar{\lambda}_{j} \equiv \frac{\lambda_{j+1} - \lambda_{j}}{2}\,.\\
+    \bar{\lambda}_{j} \equiv \frac{\lambda_{j+1} + \lambda_{j}}{2}\,.\\
 \end{equation}
 
-Each camera's throughput $T_{i}(\lambda)$ is defined as the probability that a photon incident on a fiber is converted into a photo-electron and registered by the CCD. The resolution effects in the wavelength direction $\sigma_{i}$ is given by a convolution matrix $R_{jk}$, taking us from the simulation grid indexed by $j$ to a detection grid indexed by $k$. Adding the effects of camera throughput and summing over the simulation pixels gives the number of detected electrons for camera $i$ as a function of pixels in the detection grid:
+Each camera's throughput $T_{i}(\lambda)$ is defined as the probability that a photon incident on a fiber is converted into a photo-electron and registered by the CCD readout. The resolution effects in the wavelength direction $\sigma_{i}$ are given by a convolution matrix $R_{jk}$, taking us from the simulation grid indexed by $j$ to a detection grid indexed by $k$. Adding the effects of camera throughput and summing over the simulation pixels gives the number of detected electrons for camera $i$ as a function of pixels in the detection grid:
 
 \begin{equation}
     N_{ik}^{e} = \sum_{j}R_{jk}N_{j}^{\gamma}T_{i}(\lambda_{j})\,.
@@ -204,6 +204,8 @@ A new configuration file was produced for the eBOSS instrument and named \pkg{sd
   \hline
   Telescope Parameters & DESI & eBOSS\\
   \hline \hline
+  Field of view (sq. deg.) & 8.0 & 3.0 \\
+  \hline
   Primary mirror diameter (m) & 3.797 & 2.5 \\
   \hline
   Obscuration diameter (m) & 1.8 & 0.625 \\
@@ -212,8 +214,12 @@ A new configuration file was produced for the eBOSS instrument and named \pkg{sd
   \hline
   Field radius (mm) & 414.0 & 325.0 \\
   \hline
+  Number of fibers & 5000 & 1000 \\
+  \hline
 \end{tabular}
 \end{table}
+
+% obscuration value from: https://arxiv.org/pdf/astro-ph/0602326.pdf
 
 \begin{table}[h]
 \caption{DESI camera parameters.}
@@ -251,7 +257,7 @@ A new configuration file was produced for the eBOSS instrument and named \pkg{sd
 
 \subsection{Camera}
 
-Camera data was derived separately for the red and blue cameras using data from real eBOSS spectra. The \pkg{bossdata} software package \cite{xx} was used to download data from the Sloan Digital Sky Survey (SDSS) Sky Server, and was part of version \pkg{v5$_$9$_$0} of Data Release 13, the first data release of the fourth phase of SDSS (SDSS-IV). Data was pulled from 20 random plates, each observed on a different day, for all four cameras (two blue cameras, b1 and b2, and two red cameras, r1 and r2). 
+Camera data was derived separately for the red and blue cameras using data from real eBOSS spectra. The \pkg{bossdata} software package \cite{bossdata} was used to download data from the Sloan Digital Sky Survey (SDSS) Sky Server, and was part of version \pkg{v5\_9\_0} of Data Release 13, the first data release of the fourth phase of SDSS (SDSS-IV). Data was pulled from 20 random plates, each observed on a different day, for all four cameras (two blue cameras, b1 and b2, and two red cameras, r1 and r2). 
 
 % make this horizontal?
 \begin{table}[h]
@@ -309,7 +315,7 @@ Camera data was derived separately for the red and blue cameras using data from 
 
 \subsubsection{Wavelength binning}
 
-The first task was to generate a canonical wavelength grid for each camera. Unlike the two other wavelength grids used in \pkg{specsim} (the wavelength solution for the source spectrum, controlled by the user, and a finely binned simulation grid with a resolution of 0.1$\mbox{\AA}$ is used to perform calculations for the instrument response), this canonical grid is the final wavelength binning of the simulated output. It is also the common grid over which the rest of the camera data in this section was interpolated over to be used in the configuration file. This canonical grid was derived by combining the wavelength data for the two cameras in each channel separately (b1 with b2, and r1 with r2), and generating a linear grid with equal 1$\mbox{\AA}$ binning with endpoints determined by the minimum and maximum wavelength values of all combined fibers on all plates. The wavelength solutions for all fibers on each camera are shown in Fig. \ref{fig:wavelength_solutions}, and the final result, shown in Fig. \ref{fig:canonical}, displays the output grids for each camera for both eBOSS and DESI configurations. Since the eBOSS pipeline stores spectra in units of log10($\mbox{\AA}}$), the final output employed a similar logarithmic wavelength sampling. This is discussed further in Section xx.\\
+The first task was to generate a canonical wavelength grid for each camera. Unlike the two other wavelength grids used in \pkg{specsim} (the wavelength solution for the source spectrum, controlled by the user, and a finely binned simulation grid with a resolution of 0.1$\mbox{\AA}$ is used to perform calculations for the instrument response), this canonical grid is the final wavelength binning of the simulated output. It is also the common grid over which the rest of the camera data in this section was interpolated over to be used in the configuration file. This canonical grid was derived by combining the wavelength data for the two cameras in each channel separately (b1 with b2, and r1 with r2), and generating a linear grid with equal 1$\mbox{\AA}$ binning with endpoints determined by the minimum and maximum wavelength values of all combined fibers on all plates. The wavelength solutions for all fibers on each camera are shown in Fig. \ref{fig:wavelength_solutions}, and the final result, shown in Fig. \ref{fig:canonical}, displays the output grids for each camera for both eBOSS and DESI configurations. Since the eBOSS pipeline stores spectra in units of log10($\mbox{\AA}$), the final output employed a similar logarithmic wavelength sampling. This is discussed further in Section \ref{sec:verification}.\\
 
 \begin{figure}[h]
 \centering
@@ -345,9 +351,9 @@ The first task was to generate a canonical wavelength grid for each camera. Unli
 
 \subsubsection{Spectral resolution}
 
-The wavelength solution, dispersion and FWHM resolution for each fiber were accessed from \pkg{spCFrame} files. These files contain flux-calibrated spectra for a single camera of a single exposure. The dispersion was determined by taking the gradient of the wavelength solution with respect to wavelength. The FWHM resolution, was provided in the files and converted from units of 10$^{-4}$ log10($\mbox{\AA}$) and to Angstroms.
+The wavelength solution, dispersion and FWHM resolution for each fiber were accessed from \pkg{spCFrame} files. These files contain flux-calibrated spectra for a single camera of a single exposure. The dispersion was determined by taking the gradient of the wavelength solution with respect to pixel number. The FWHM resolution was provided in the files and converted from units of 10$^{-4}$ log10($\mbox{\AA}$) to Angstroms.
 
-Spatial resolution data was obtained from \pkg{spFlat} files as the first-order corrected profile width for each fiber bundle. The Gaussian sigma for this profile, given in units of pixels, came in the form of a trace, or table of coefficients as a function of $x-$position on the CCD, that were then fed to a fitting function. This gave the spatial width as a function of wavelength.
+Spatial resolution data was obtained from \pkg{spFlat} files as the first-order corrected profile width for each fiber bundle. The Gaussian sigma for this profile, given in units of pixels, came in the form of a trace solution, or table of coefficients as a function of $x-$position on the CCD, that were then fed to a fitting function. This gave the spatial width as a function of wavelength.
 
 Data for the dispersion, FWHM resolution, and spatial resolution were combined in the same fashion. After combining the data for each blue or red camera, these quantities were interpolated separately for all fibers over the canonical grid, and the median over all fibers and all plates was taken. The final results, along with DESI values for comparison, are shown in Figs. \ref{fig:disp}-\ref{fig:neff}.
 
@@ -390,13 +396,13 @@ Data for the dispersion, FWHM resolution, and spatial resolution were combined i
 
 \subsubsection{Throughput}
 
-Throughput data was initially generated for eBOSS quasars by working backwards from flux-calibrated SEDs to detected electrons. The SEDs were derived from all standard stars on the plates in Table \ref{tab:eboss_plates}. Standard stars were used because, like quasars, their profiles are PSF-like. Since they are brighter, they also have a higher signal-to-noise ratio. 
+Throughput data was initially generated for eBOSS quasars by working backwards from flux-calibrated SEDs to detected electrons. The SEDs were derived from all standard stars on the plates listed in Table \ref{tab:eboss_plates}. Standard stars were used because, like quasars, their profiles are PSF-like. Since they are brighter, they also have a higher signal-to-noise ratio. 
 
-Fig. \ref{fig:fiberloss_chart} shows the process of going from the final, calibrated flux, to the product of fiberloss and throughput for a single standard star. This product is the ratio of detected electrons on the CCD to photons entering the telescope. The top four panels trace the process of obtaining the number of photons using data from \pkg{spFrame} files, which contain non-calibrated spectra for a single exposure of an individual camera. The bottom four chart show the number of incoming photons is derived using data from \pkg{spCFrame} files.
+Fig. \ref{fig:fiberloss_chart} shows the process of going from the final, calibrated flux, to the product of fiberloss and throughput for a single standard star. This product is the ratio of detected electrons on the CCD to photons entering the telescope. The top four panels trace the process of obtaining the number of photons incident on the primary mirror using data from \pkg{spFrame} files, which contain non-calibrated spectra for a single exposure of an individual camera. The next three panels show how to obtain the number of detected electrons using data from \pkg{spCFrame} files, while the last panel shows the ratio of the two quantities. 
 
-We begin with a flux density in the upper left panel, which has been interpolated over the nominal wavelength grid. We then convert from a density to the number photons above the atmosphere by multiplying by the area of the primary mirror, the exposure time, and dividing by the energy of each photon at the midpoints of the canonical wavelength bins. Next we must remove the extinction correction, shown in the third panel, interpolated over the nominal grid. This is done by multiplying the photons entering the atmosphere by the extinction to give the number of photons entering the telescope. 
+We begin with a flux density in the upper left panel, which has been interpolated over the nominal wavelength grid. We then convert from a density to the number photons above the atmosphere by multiplying by the area of the primary mirror, the exposure time, and dividing by the energy of each photon at the midpoints of the canonical wavelength bins. Next we must remove the extinction correction, shown in the third panel after being interpolated over the nominal grid. This is done by multiplying the photons entering the atmosphere by the extinction to give the number of photons entering the telescope. 
 
-To derive the number of electrons detected by the camera, we start with the flux in flat-fielded electrons and remove the flat-fielding correction by multiplying by the superflat and the fiberflat (see the third row of Fig. \ref{fig:fiberloss_chart}). This gives the number of detected electrons. This result is divided by the photons entering the telescope to yield the product of the fiberloss and the throughput, as expressed in the last panel.
+To derive the number of electrons detected by the camera, we start with the flux in flat-fielded electrons and remove the flat-fielding correction by multiplying by the superflat and the fiberflat (see the third row of Fig. \ref{fig:fiberloss_chart}). This result is divided by the number of photons entering the telescope to yield the product of the fiberloss and the throughput, as expressed in the last panel.
 
 \begin{figure}[h]
 \centering
@@ -413,23 +419,25 @@ To derive the number of electrons detected by the camera, we start with the flux
     \label{fig:all_stds}
 \end{figure}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=20cm]{images/specsim/downsampled_blue.png}
-    \caption{Median vs mean downsampled of all SPECTROPHOTO\_STD blue camera.}
-    \label{fig:downsampled_blue}
-\end{figure}
-
-
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=20cm]{images/specsim/downsampled_red.png}
-\caption{Median vs mean downsampled of all SPECTROPHOTO\_STD red camera.}
-\label{fig:downsampled_red}
+\begin{subfigure}[b]{0.55\textwidth}
+\centering
+   \includegraphics[width=1\textwidth]{images/specsim/downsampled_blue_7027_56448.png}
+   \caption{}
+\end{subfigure}
+
+\begin{subfigure}[b]{0.55\textwidth}
+\centering
+   \includegraphics[width=1\textwidth]{images/specsim/downsampled_red_7027_56448.png}
+   \caption{}
+\end{subfigure}
+\caption[]{(a) (b)}
+\label{fig:downsampled}
 \end{figure}
 
-This quantity was derived for all standard stars on plate 7027 listed in Table \ref{tab:eboss_plates}, the result of which is shown in Fig. \ref{fig:all_stds}. Next, the median over all 20 standard stars on this plate was taken, and smoothing was applied by downsampling by a factor of 100. The product of the fiberloss and the throughput after smoothing is shown in Figs. \ref{fig:downsampled_blue} \& \ref{fig:downsampled_red} for the blue and red cameras, respectively. 
 
+This quantity was derived for all standard stars on plate 7027, the result of which is shown in Fig. \ref{fig:all_stds}. Next, the median of the 20 standard stars on this plate was taken, and smoothing was applied by downsampling by a factor of 100. The product of the fiberloss and throughput after smoothing is shown in Fig. \ref{fig:downsampled} for the blue and red cameras.
 
 \begin{figure}[h]
 \centering
@@ -438,12 +446,6 @@ This quantity was derived for all standard stars on plate 7027 listed in Table \
 \label{fig:desimodel_qso_floss}
 \end{figure}
 
-
-The final eBOSS throughput data was obtained by dividing out a constant value for the fiberloss. Fig. \ref{fig:desimodel_qso_floss} shows fiberloss values as a function of wavelength for 500 simulated DESI quasars, with the median over all fibers shown in the black solid line and the tabulated quasar fiberloss values shown in the dashed red line. The different fiber colors correspond to distance from the center of the focal plane. It was decided that a fiber acceptance value of 0.55 would be sufficient to use, as this seemed to be about the average across all wavelengths.
-
-At one point it was found that data for the expected throughput of the eBOSS spectrograph was available from \cite{Smee_2013}, shown as the black line in Fig. \ref{fig:smee}. Fresnel losses at the fiber faces, focal ration degredation, and ``slit" losses for 1" FWHM seeing conditions modeled with a double Gaussian PSF are not shown in this curve and had to be accounted for and degraded the final throughput curve by an additional 15\%, 4\%, and 17\%, respectively. A comparison of the throughput derived from standards stars on plate 7027 versus the expected throughput data provided by the eBOSS collaboration is shown in Fig. \ref{fig:throughput}. The latter was ultimately used for the specsim eBOSS configuration.
-
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=14cm]{images/specsim/smee_throughput.png}
@@ -451,60 +453,92 @@ At one point it was found that data for the expected throughput of the eBOSS spe
 \label{fig:smee}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=14cm]{images/specsim/throughput_7027_56448.png}
-\caption{Final throughput comparison.}
-\label{fig:throughput}
-\end{figure}
+The final eBOSS quasar throughput data was obtained by dividing out a constant value for the fiberloss. Fig. \ref{fig:desimodel_qso_floss} shows fiberloss values as a function of wavelength for 500 simulated DESI quasars, with the median over all fibers shown as the black solid line and the tabulated quasar fiberloss values shown as the dashed red line. The range of fiber colors correspond to their respective distance from the center of the focal plane. It was decided that a fiber acceptance value of 0.55 would be sufficient to use, as this seemed to be about the average across all wavelengths.
 
+It was later found that data for the expected throughput of the eBOSS spectrograph were available from the eBOSS collaboration \cite{Smee_2013}, depicted as the black line in Fig. \ref{fig:smee}. Fresnel losses at the fiber faces, focal ratio degredation, and ``slit" losses for 1" FWHM seeing conditions modeled with a double Gaussian PSF are not shown in this curve and had to be accounted for. These effects degraded the final throughput curve by an additional 15\%, 4\%, and 17\%, respectively. A comparison of the throughput derived from standards stars on four different plates versus the expected throughput data provided by the eBOSS collaboration is shown in Fig. \ref{fig:throughput_comparison}. The shapes of the dotted and solid curves are generally consistent, although there is a vertical offset in all four cases that is likely the result of different normalizations in the flux-calibration procedure. The Smee throughput data was ultimately chosen for the specsim eBOSS configuration.
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.475\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/specsim/throughput_7027_56448.png}
+            \caption[Network2]%
+            {{\small Network 1}}    
+            \label{fig:thru1}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{images/specsim/throughput_7517_56772.png}
+            \caption[]%
+            {{\small Network 2}}    
+            \label{fig:thru2}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/specsim/throughput_6178_56213.png}
+            \caption[]%
+            {{\small Network 3}}    
+            \label{fig:thru3}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/specsim/throughput_6877_56544.png}
+            \caption[]%
+            {{\small Network 4}}    
+            \label{fig:thru4}
+        \end{subfigure}
+        \caption[ The average and standard deviation of critical parameters ]
+        {\small The average and standard deviation of critical parameters: Region R4} 
+        \label{fig:throughput_comparison}
+    \end{figure}
 
 \subsubsection{Fiber acceptance fraction}
+\label{sec:fiberloss}
 
-The fiber acceptance fraction, or fiberloss, is the fraction of light incident on the fiber that makes it through the fiber face. It is ultimately determined by the source profile, as the total light extended sources is less likely to pass through the fiber than light from sources with star-like profiles, such as quasars.
+The fiber acceptance fraction, or fiberloss, is the fraction of light incident on the fiber that makes it through the fiber face. It is ultimately determined by the source profile, as a smaller fraction of the total light from extended sources is likely to pass through the fiber than the fraction of total light from sources with star-like profiles, such as quasars.
 
-There are three different methods to account for fiberloss in \pkg{specsim}. The \pkg{table} method uses a pre-computed table of fiberloss fractions based on the source type. The \pkg{galsim} method uses information about the transverse profile of the source on the sky to calculate fiberloss fractions via \pkg{GalSim}, a software package that simulates high-fidelity images of galaxies (cite). Finally, \pkg{specsim} can interpolate fiber acceptance values pre-computed with \pkg{GalSim} with the \pkg{fastsim} method. This method assumes a fixed axis ratio of 0.7, a fixed Moffat PSF model with $\beta=3.5$ for the atmosphere, and a fixed fiber diameter of $107 \mu$m. 
+There are three different methods to account for fiberloss in \pkg{specsim}. The \pkg{table} method uses a pre-computed table of fiberloss fractions based on the source type. The \pkg{galsim} method uses information about the transverse profile of the source on the sky to calculate fiberloss fractions via \pkg{GalSim}, a software package that simulates high-fidelity images of galaxies \cite{Rowe_2015}. Finally, \pkg{specsim} can interpolate fiber acceptance values pre-computed with \pkg{GalSim} with the \pkg{fastsim} method. This method assumes a fixed axis ratio of 0.7, a fixed Moffat PSF model with $\beta=3.5$ for the atmosphere, and a fixed fiber diameter of $107 \mu$m. 
 
-
+The \pkg{table} method for the eBOSS configuration required fiberloss values for each source type. This was done by adjusting the DESI fiberloss data to cover the range of the simulation grid by the beginning or end of each fiberloss array with the value at the smallest or largest wavelength, respectively. The final values for three different source types are shown in Fig. \ref{fig:qso_fiberloss}, which shows both DESI and eBOSS fiber acceptance fractions.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.495\textwidth]{images/specsim/desimodel-fiberloss.png}
     \includegraphics[width=0.495\textwidth]{images/specsim/eboss_fiberloss.png}
-    \caption{Quasar fiberloss for eBOSS (right), adjusted from DESI(left).}
+    \caption{DESI fiberloss data (left), adjusted quasar fiberloss for eBOSS (right).}
     \label{fig:qso_fiberloss}
 \end{figure}
 
+\subsubsection{Additional configuration data}
+\label{sec:additional}
 
+There were a few more inputs that needed to be specified for eBOSS, namely the extinction, the sky brightness, and the source spectrum. These data were generated in a similar fashion to the fiberloss in that they were derived from the existing DESI values, however, there was an additional option to extend the array to cover the range over which to interpolate the data over the simulation grid. Rather than simply padding the ends of the array with a constant value, both ends of the extinction and the source spectrum were fit to a low-order polynomial to give more continuous coverage and better match the trends at low and high wavelengths, as seen in Fig. \ref{fig:adjusted}. The sky brightness was flat at each end of the spectrum, and so a constant value was used for padding. 
 
-%Extinction
-
-\begin{figure}[h]
+\begin{figure}
+\begin{minipage}{.5\linewidth}
 \centering
-\includegraphics[width=12cm]{images/specsim/extinction.png}
-\caption{Extinction comparison.}
-\label{fig:extinction}
+\subfloat[]{\label{main:a}\includegraphics[scale=.3]{images/specsim/extinction.png}}
+\end{minipage}%
+\begin{minipage}{.5\linewidth}
+\centering
+\subfloat[]{\label{main:b}\includegraphics[scale=.3]{images/specsim/sky_brightness.png}}
+\end{minipage}\par\medskip
+\centering
+\subfloat[]{\label{main:c}\includegraphics[scale=.3]{images/specsim/source.png}}
+\caption{Adjusted additional data.}
+\label{fig:adjusted}
 \end{figure}
 
-%Sky brightness
+\subsection{Verification of the eBOSS configuration}
+\label{sec:verification}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=12cm]{images/specsim/sky_brightness.png}
-\caption{Sky brightness comparison.}
-\label{fig:sky_brightness}
-\end{figure}
+simulation of eboss quasar spectrum
+inverse variance study
 
-%Source
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=12cm]{images/specsim/source.png}
-\caption{QSO source comparison.}
-\label{fig:qso_source}
-\end{figure}
-
-%Final config
+Fig. \ref{fig:eboss_config} shows the final eBOSS instrument configuration data. The blue and green curves correspond to the blue and red cameras, respectively. A similar result is shown for the three channels in the DESI configuration in Fig. \ref{fig:desi_config}.
 
 \begin{figure}[h]
 \centering
@@ -513,6 +547,11 @@ There are three different methods to account for fiberloss in \pkg{specsim}. The
 \label{fig:eboss_config}
 \end{figure}
 
+
+To verify the simulated output    \pkg{specsim} by comparing the simulated output in both DESI and eBOSS configurations given the same source spectrum. The model spectra used are shown in Fig. \ref{fig:model_comparison}, where the eBOSS SED is the adjusted 22.4 magnitude DESI quasar spectrum at z$=1.5$ described in Section \ref{sec:additional}. The result in Fig. \ref{fig:sim_comparison} successfully 
+
+converted to so that output wavelength is linear in log10(lambda) for lyman alpha studies
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=12cm]{images/specsim/desi_config.png}
@@ -520,7 +559,23 @@ There are three different methods to account for fiberloss in \pkg{specsim}. The
 \label{fig:desi_config}
 \end{figure}
 
-\subsection{Verification/simulation}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/model_comparison.png}
+\caption{Comparison of DESI vs eBOSS model qso spectrum.}
+\label{fig:model_comparison}
+\end{figure}
+
+% mention how to produce these by calling specsim.simulator and specsim.simulate etc. a la: https://specsim.readthedocs.io/en/stable/output.html
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16cm]{images/specsim/sim_comparison.png}
+\caption{Compare desi and eboss simulated qso spectrum.}
+\label{fig:sim_comparison}
+\end{figure}
 
 \begin{figure}[h]
     \centering
@@ -529,7 +584,6 @@ There are three different methods to account for fiberloss in \pkg{specsim}. The
     \caption{Stellar model + sky data}
     \label{fig:star_sky}
 \end{figure}
-
 
 \begin{figure}[h]
 \centering
@@ -557,21 +611,6 @@ There are three different methods to account for fiberloss in \pkg{specsim}. The
     \label{fig:ivar}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=16cm]{images/specsim/model_comparison.png}
-\caption{Compare desi and eboss model qso spectrum.}
-\label{fig:model_comparison}
-\end{figure}
-
-% mention how to produce these by calling specsim.simulator and specsim.simulate etc. a la: https://specsim.readthedocs.io/en/stable/output.html
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=16cm]{images/specsim/sim_comparison.png}
-\caption{Compare desi and eboss simulated qso spectrum.}
-\label{fig:sim_comparison}
-\end{figure}
 
 \begin{figure}[h]
 \centering
